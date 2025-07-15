@@ -35,3 +35,4 @@ class BaksDevOzonPackageBundle extends AbstractBundle
 
     public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
 }
+
