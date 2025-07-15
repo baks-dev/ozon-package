@@ -1,7 +1,7 @@
 {
-  "name": "baks-dev/ozon-manufacture",
-  "description": "Модуль производства продукции заказов Ozon",
-  "homepage": "https://github.com/baks-dev/ozon-manufacture",
+  "name": "baks-dev/ozon-package",
+  "description": "Модуль упаковки заказов Озон",
+  "homepage": "https://github.com/baks-dev/ozon-package",
   "keywords": [
     "symfony",
     "bundle",
@@ -10,7 +10,7 @@
     "plugin",
     "ozon",
     "orders",
-    "manufacture",
+    "package",
     "baksdev"
   ],
   "license": "MIT",
@@ -23,17 +23,14 @@
   ],
   "require": {
     "php": ">=8.4",
-    "baks-dev/core": "^7.2",
-    "baks-dev/manufacture-part": "^7.2",
-    "baks-dev/ozon-package": "^7.2",
-    "baks-dev/ozon-orders": "^7.2"
+    "baks-dev/core": "^7.2"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest"
   },
   "autoload": {
     "psr-4": {
-      "BaksDev\\Ozon\\Manufacture\\": ""
+      "BaksDev\\Wildberries\\Package\\": ""
     }
   },
   "config": {

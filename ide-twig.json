@@ -1,7 +1,7 @@
 {
   "namespaces": [
     {
-      "namespace": "ozon-manufacture",
+      "namespace": "ozon-package",
       "path": "Resources/view"
     }
   ]
