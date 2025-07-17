@@ -30,7 +30,7 @@
   },
   "autoload": {
     "psr-4": {
-      "BaksDev\\Wildberries\\Package\\": ""
+      "BaksDev\\Ozon\\Package\\": ""
     }
   },
   "config": {
