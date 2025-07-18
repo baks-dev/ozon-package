@@ -1,0 +1,35 @@
+{% trans_default_domain('ozon-package.supply') %}
+
+<tr class="vertical-middle">
+
+    <td class="text-nowrap">
+        {# Пользовательское меню #}
+        {{ include(_self|replace({ "card.html.twig": "_usecase.html.twig" })) }}
+    </td>
+
+    <td>
+        <span class="badge {{ item.status == 'close' ? 'bg-success' : 'bg-warning text-dark' }} shadow">
+            {{ item.status|trans }}
+        </span>
+    </td>
+
+    <td class="text-center w-25">
+        <a href="{{ path('ozon-package:admin.supply.detail', { id: item.id }) }}"
+           class="fw-bolder mb-1 text-decoration-none product-name">
+            {{ item.identifier ?: 'new'|trans }}
+        </a>
+    </td>
+
+    <td class="text-center">
+        {{ item.total }}
+    </td>
+
+    <td class="text-center text-nowrap">
+        {{ item.supply_date|date('d.m.Y H:i') }}
+    </td>
+
+    <td class="w-100">
+        &nbsp;
+    </td>
+
+</tr>

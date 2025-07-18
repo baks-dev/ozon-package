@@ -21,16 +21,36 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-namespace BaksDev\Ozon\Package;
+use BaksDev\Ozon\Package\BaksDevOzonPackageBundle;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+return static function(ContainerConfigurator $configurator) {
 
-class BaksDevOzonPackageBundle extends AbstractBundle
-{
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    $services = $configurator->services()
+        ->defaults()
+        ->autowire()
+        ->autoconfigure();
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
-}
+    $NAMESPACE = BaksDevOzonPackageBundle::NAMESPACE;
+    $PATH = BaksDevOzonPackageBundle::PATH;
 
+    $services->load($NAMESPACE, $PATH)
+        ->exclude([
+            $PATH.'{Entity,Resources,Type}',
+            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
+            $PATH.'**'.DIRECTORY_SEPARATOR.'*Result.php',
+            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
+            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
+        ]);
+
+    $services->load(
+        $NAMESPACE.'Type\Package\Status\OzonPackageStatus\\',
+        $PATH.implode(DIRECTORY_SEPARATOR, ['Type', 'Package', 'Status', 'OzonPackageStatus'])
+    );
+
+    $services->load(
+        $NAMESPACE.'Type\Supply\Status\OzonSupplyStatus\\',
+        $PATH.implode(DIRECTORY_SEPARATOR, ['Type', 'Supply', 'Status', 'OzonSupplyStatus'])
+    );
+};

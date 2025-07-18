@@ -23,14 +23,35 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Type\Package\Status;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+final class OzonPackageStatusType extends Type
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
+    {
+        return (string) new OzonPackageStatus($value);
+    }
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?OzonPackageStatus
+    {
+        return !empty($value) ? new OzonPackageStatus($value) : null;
+    }
+
+    public function getName(): string
+    {
+        return OzonPackageStatus::TYPE;
+    }
+
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return true;
+    }
+
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    {
+        return $platform->getStringTypeDeclarationSQL($column);
+    }
 }
-

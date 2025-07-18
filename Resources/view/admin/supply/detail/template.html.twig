@@ -1,0 +1,29 @@
+{% trans_default_domain("ozon-package.supply") %}
+
+{% set ROLE = 'ROLE_MANUFACTURE_PART' %}
+
+{% extends Template('/admin/base.html.twig') %}
+
+{% block title %}
+    {{ 'page.index'|trans }}
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="/assets/plugins/nice-select2/nice-select2.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/print.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block content %}
+
+    {{ include(_self|replace({ "template.html.twig": baks_settings.device~"/content.html.twig" })) }}
+
+{% endblock %}
+
+{% block javascript %}
+
+<script nonce='{{ csp_nonce() }}' async  data-src='/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}' class='lazy'></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="/assets/js/print.min.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="/assets/js/copy.min.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async data-src="/assets/products_product/filter.min.js?v={{ version }}" class="lazy"></script>
+
+{% endblock %}

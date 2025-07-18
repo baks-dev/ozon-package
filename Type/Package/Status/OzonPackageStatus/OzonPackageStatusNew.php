@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,37 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Type\Package\Status\OzonPackageStatus;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Ozon\Package\Type\Package\Status\OzonPackageStatus\Collection\OzonPackageStatusInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+#[AutoconfigureTag('baks.ozon.package.status')]
+final class OzonPackageStatusNew implements OzonPackageStatusInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    /**
+     * Статус Новый (добавлена в системную поставку)
+     */
+    public const string STATUS = 'new';
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public function __toString(): string
+    {
+        return self::STATUS;
+    }
+
+    /**
+     * Возвращает значение (value)
+     */
+    public function getValue(): string
+    {
+        return self::STATUS;
+    }
+
+    /**
+     * Проверяет, относится ли строка к данному объекту
+     */
+    public static function equals(string $status): bool
+    {
+        return mb_strtolower($status) === self::STATUS;
+    }
 }
-

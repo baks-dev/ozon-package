@@ -1,0 +1,49 @@
+# Роль
+
+## Package
+
+ROLE_OZON_PACKAGE:
+  name: 'Упаковка заказов Ozon'
+  desc: 'Упаковка заказов Ozon'
+
+ROLE_OZON_PACKAGE_INDEX:
+  name: 'Просмотр'
+  desc: ''
+
+ROLE_OZON_PACKAGE_ADD:
+  name: 'Добавить заказ'
+  desc: ''
+
+ROLE_OZON_PACKAGE_DELETE:
+  name: 'Удалить заказ'
+  desc: ''
+
+ROLE_OZON_PACKAGE_PRINT:
+  name: 'Печать'
+  desc: ''
+
+## Supply
+
+ROLE_OZON_SUPPLY:
+  name: 'Поставки'
+  desc: 'Поставки Ozon'
+
+ROLE_OZON_SUPPLY_INDEX:
+  name: 'Просмотр'
+  desc: ''
+
+ROLE_OZON_SUPPLY_NEW:
+  name: 'Открыть поставку'
+  desc: ''
+
+ROLE_OZON_SUPPLY_CLOSE:
+  name: 'Закрыть поставку'
+  desc: ''
+
+ROLE_OZON_SUPPLY_DELETE:
+  name: 'Удалить поставку'
+  desc: ''
+
+ROLE_OZON_SUPPLY_PRINT:
+  name: 'Печать'
+  desc: ''

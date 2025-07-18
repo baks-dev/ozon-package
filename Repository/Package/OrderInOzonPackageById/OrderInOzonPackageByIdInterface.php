@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,22 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-declare(strict_types=1);
+namespace BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById;
 
-namespace BaksDev\Ozon\Package;
+use BaksDev\Orders\Order\Entity\Order;
+use BaksDev\Orders\Order\Type\Id\OrderUid;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-
-class BaksDevOzonPackageBundle extends AbstractBundle
+interface OrderInOzonPackageByIdInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public function forOrder(Order|OrderUid|string $order): self;
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    /**
+     * Метод получает информацию о заказе, продукте, упаковке, Честном знаке
+     *
+     * @return \Generator{int, OrderInOzonPackageByIdResult}|false
+     */
+    public function findAll(): \Generator|false;
 }
-

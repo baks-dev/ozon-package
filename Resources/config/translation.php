@@ -21,16 +21,15 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-namespace BaksDev\Ozon\Package;
+use BaksDev\Ozon\Package\BaksDevOzonPackageBundle;
+use Symfony\Config\FrameworkConfig;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+return static function(FrameworkConfig $config) {
 
-class BaksDevOzonPackageBundle extends AbstractBundle
-{
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    $config
+        ->translator()
+        ->paths([BaksDevOzonPackageBundle::PATH.implode(DIRECTORY_SEPARATOR, ['Resources', 'translations', ''])]);
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
-}
-
+};

@@ -1,0 +1,11 @@
+{# ПЕЧАТЬ #}
+
+<div class="{{ app.request.headers.get('X-Requested-With') is not null ? 'd-none' }} d-print-block p-0 w-100">
+
+    <img
+            style="height: 250px; transform: rotate(90deg); margin-top: 50px;"
+            src='{{ sticker ? 'data:image/svg+xml;base64,'~sticker : '/assets/img/blank.svg' }}'
+            alt='Штрихкод поставки Wildberries'
+    />
+
+</div>

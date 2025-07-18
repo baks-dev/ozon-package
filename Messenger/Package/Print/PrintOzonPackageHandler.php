@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,40 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Messenger\Package\Print;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Core\Entity\AbstractHandler;
+use BaksDev\Ozon\Package\Entity\Package\Event\Supply\OzonPackageSupply;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+#[AsMessageHandler]
+final class PrintOzonPackageHandler extends AbstractHandler
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public function __invoke(PrintOzonPackageMessage $command): void
+    {
+        $this->clear();
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+        /** @var OzonPackageSupply $OzonPackageSupply */
+        $OzonPackageSupply = $this->getRepository(OzonPackageSupply::class)->find($command->getMain());
+
+        if($this->validatorCollection->add($OzonPackageSupply, context: [self::class.':'.__LINE__]))
+        {
+            $this->setCommand($command);
+
+            $OzonPackageSupply->setEntity($command);
+
+            /* Валидация всех объектов */
+            if($this->validatorCollection->isInvalid())
+            {
+                return;
+            }
+
+            $this->flush();
+        }
+    }
 }
-

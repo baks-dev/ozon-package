@@ -1,0 +1,6 @@
+{% extends Template('/user/base.html.twig') %}
+
+{% block content %}
+
+    {{ include(_self|replace({ "template.html.twig" : baks_settings.device~"/content.html.twig" })) }}
+{% endblock %}

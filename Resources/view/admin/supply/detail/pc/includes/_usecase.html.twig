@@ -1,0 +1,58 @@
+{# @var item \BaksDev\Ozon\Package\Repository\Supply\OzonPackageOrdersByOzonSupply\OzonPackageOrdersByOzonSupplyResult #}
+
+{# Пользовательское меню #}
+{% set identifier = item.orderNumber %}
+
+<button class="btn btn-link btn-sm d-flex align-items-center"
+        id="usecase-{{ identifier }}"
+        data-bs-container="body"
+        data-bs-toggle="popover"
+        data-bs-placement="right"
+        data-bs-trigger="click">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+         fill="currentColor" class="text-muted"
+         viewBox="0 0 16 16">
+        <path fill-rule="evenodd"
+              d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+    </svg>
+</button>
+
+<div id="usecase-{{ identifier }}-content" class="d-none">
+    <ul class="leader list-group list-group-flush ">
+
+        <li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5 disabled">
+            <a href="#"
+               class="text-decoration-none text-dark w-100"
+               title="Удалить заказ из поставки">
+                Удалить заказ из поставки
+            </a>
+        </li>
+
+
+        <li class="list-group-item disabled border-0">
+            <h6 class="h6 text-primary">ozon</h6>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
+            <a href="https://seller.ozon.ru/marketplace-orders-new/new-tasks/to-warehouse"
+               class="text-decoration-none text-dark w-100"
+               title="Сборочные задания"
+               target="_wb">
+                Новые сборочные задания
+            </a>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
+            <a href="https://seller.ozon.ru/marketplace-orders-new/on-assembly/to-warehouse"
+               class="text-decoration-none text-dark w-100"
+               title="Открытые поставки"
+               target="_wb">
+                Открытые поставки
+            </a>
+        </li>
+    </ul>
+
+</div>
+
+
+

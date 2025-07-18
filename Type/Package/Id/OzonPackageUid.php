@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,33 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Type\Package\Id;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Core\Type\UidType\Uid;
+use Symfony\Component\Uid\AbstractUid;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+final class OzonPackageUid extends Uid
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public const string TEST = 'ed0280b7-aadd-722c-bf37-07b56cf62c73';
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public const string TYPE = 'ozon_package';
+
+    public function __construct(
+        AbstractUid|string|null $value = null,
+        private readonly mixed $attr = null,
+        private readonly mixed $option = null,
+    )
+    {
+        parent::__construct($value);
+    }
+
+    public function getAttr(): mixed
+    {
+        return $this->attr;
+    }
+
+    public function getOption(): mixed
+    {
+        return $this->option;
+    }
 }
-

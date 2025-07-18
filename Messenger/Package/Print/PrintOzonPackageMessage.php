@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,47 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Messenger\Package\Print;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Ozon\Package\Entity\Package\Event\Supply\OzonPackageSupplyInterface;
+use BaksDev\Ozon\Package\Type\Package\Id\OzonPackageUid;
+use Symfony\Component\Validator\Constraints as Assert;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+/** @see PrintOzonPackageHandler */
+final class PrintOzonPackageMessage implements OzonPackageSupplyInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    /**
+     * Идентификатор OzonSupply
+     */
+    #[Assert\NotBlank]
+    #[Assert\Uuid]
+    private readonly OzonPackageUid $main;
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    /**
+     * Статус печати стикеров упаковки
+     */
+    private readonly bool $print;
+
+
+    public function __construct(OzonPackageUid $main)
+    {
+        $this->main = $main;
+        $this->print = true;
+    }
+
+    public function getMain(): OzonPackageUid
+    {
+        return $this->main;
+    }
+
+    public function getPrint(): bool
+    {
+        return $this->print;
+    }
+
 }
-

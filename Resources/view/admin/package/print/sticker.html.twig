@@ -1,0 +1,61 @@
+{# @var settings \BaksDev\Ozon\Products\Repository\Barcode\OzonBarcodeSettings\OzonBarcodeSettingsResult #}
+{# @var card \BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidResult #}
+
+{% if card %}
+
+    <div>
+        <div>Номер: {{ number }}</div>
+
+        {% if settings.name and card.productName %}
+            <div style="white-space: nowrap;">
+                Название: {{ string_width(card.productName, 32) }}
+            </div>
+        {% endif %}
+
+        <div>Категория: {{ card.categoryName }}</div>
+
+        {% if settings %}
+
+            <div>Арт: {{ card.productArticle }}</div>
+
+            <div>
+                {% if settings.offer and card.productOfferName %}
+                    {# Значение торгового предложения #}
+                    {{ card.productOfferName }}: {{ card.productOfferValue|call_twig_func(card.productOfferReference) }} &nbsp;
+                {% endif %}
+
+                {% if settings.variation and card.productVariationName %}
+                    {# Значение множественного варианта ТП #}
+                    {{ card.productVariationName }}: {{ card.productVariationValue|call_twig_func(card.productVariationReference) }}
+                {% endif %}
+
+                {% if settings.modification and card.productModificationName %}
+                    {# Значение множественного варианта ТП #}
+                    {{ card.productModificationName }}: {{ card.productModificationValue|call_twig_func(card.productModificationReference) }}
+                {% endif %}
+            </div>
+
+            {% for props in settings.property %}
+                <div>{{ props.name }}: {{ props.value }}</div>
+            {% endfor %}
+
+            {% for props in settings.custom %}
+                <div>{{ props.name }}: {{ props.value }}</div>
+            {% endfor %}
+
+        {% endif %}
+
+        <div>Дата производства: {{ "now"|date("d.m.Y") }}</div>
+    </div>
+
+    <div class="text-end" style="float: right;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 200 200">
+            <path fill="#fff" d="M-1.179-.59h201.084v186.145H-1.179z"/>
+            <path d="M50 13H10v155h40v-20H30V98h20V83H30V33h20z"/>
+            <path d="M90 98v70H70V13h60v155h-20V98z" stroke="#000"/>
+            <path d="M90 83h20V28H90z" fill="#fff" stroke="#000"/>
+            <path d="M190 13h-40v155h40v-20h-20V33h20z" stroke="#000"/>
+        </svg>
+    </div>
+
+{% endif %}
