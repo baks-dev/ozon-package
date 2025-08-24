@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +21,18 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+namespace BaksDev\Ozon\Package\Repository\Supply\OzonSupplyCurrentEvent;
 
-namespace BaksDev\Ozon\Package;
+use BaksDev\Ozon\Package\Entity\Supply\Event\OzonSupplyEvent;
+use BaksDev\Ozon\Package\Entity\Supply\OzonSupply;
+use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-
-class BaksDevOzonPackageBundle extends AbstractBundle
+interface OzonSupplyCurrentEventInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public function forSupply(OzonSupply|OzonSupplyUid|string $supply): self;
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    /**
+     * Возвращает активное событие поставки
+     */
+    public function find(): OzonSupplyEvent|false;
 }
-

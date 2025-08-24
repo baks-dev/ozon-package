@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,26 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Security\Supply;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Users\Profile\Group\Security\RoleInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+#[AutoconfigureTag('baks.security.role')]
+//#[AutoconfigureTag('baks.menu.admin')]
+final class Role implements RoleInterface //, MenuAdminInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public const string ROLE = 'ROLE_OZON_SUPPLY';
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public const string KEY = 'FJEJdCRO';
+
+    public function getRole(): string
+    {
+        return self::ROLE;
+    }
 }
-

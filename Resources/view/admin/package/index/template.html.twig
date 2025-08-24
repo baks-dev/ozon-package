@@ -1,0 +1,179 @@
+{% trans_default_domain("ozon-package.package") %}
+
+{% set ROLE = 'ROLE_OZON_PACKAGE' %}
+
+{# ---- ШАБЛОН ------------------------------------------------------------ #}
+{% extends Template('/admin/base.html.twig') %}
+
+{# ---- CSS ------------------------------------------------------------ #}
+{% block title %}
+    {{ 'page.index'|trans }}
+{% endblock %}
+
+{# ---- CSS ------------------------------------------------------------ #}
+{% block stylesheets %}
+    <link href="/assets/plugins/nice-select2/nice-select2.min.css" rel="stylesheet">
+    <link href="/assets/css/print.min.css" rel="stylesheet" type="text/css">
+    <style>
+        .blink {
+            color: rgb(255, 0, 0);
+            -webkit-animation: blink 2s linear infinite;
+            animation: blink 2s linear infinite;
+        }
+
+        @-webkit-keyframes blink {
+            50% {
+                color: rgb(255, 0, 0);
+            }
+            51% {
+                color: rgba(255, 0, 0, 0);
+            }
+            100% {
+                color: rgba(255, 0, 0, 0);
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                color: rgb(255, 0, 0);
+            }
+            51% {
+                color: rgba(255, 0, 0, 0);
+            }
+            100% {
+                color: rgba(255, 0, 0, 0);
+            }
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+    {{ include(_self|replace({ "template.html.twig": baks_settings.device~"/content.html.twig" })) }}
+
+{% endblock %}
+
+{% block javascript %}
+
+<script nonce='{{ csp_nonce() }}' async  data-src='/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}' class='lazy'></script>
+<script nonce='{{ csp_nonce() }}' async data-src="/assets/centrifugo/centrifuge.min.js?v={{ version }}" class='lazy'></script>
+<script nonce='{{ csp_nonce() }}' async data-src="/assets/js/copy.min.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="/assets/js/print.min.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="/assets/ozon-package/filter.min.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async data-src="/assets/products_product/filter.min.js?v={{ version }}" class="lazy"></script>
+
+{# Сокеты #}
+<script nonce="{{ csp_nonce() }}">
+
+setTimeout(function SpgGHaQzun() {
+
+    if (typeof Centrifuge === 'function') {
+        centrifuge = new Centrifuge("wss://{{ centrifugo_dsn }}/connection/websocket",
+            {
+                token: "{{ token }}",
+                getToken: function (ctx) {
+                    return getToken('/centrifugo/credentials/user', ctx);
+                },
+                debug: '{{ app.environment }}' === 'dev',
+            });
+
+		{% if opens.status is defined and opens.status != 'complete' %}
+
+			  centrifuge.newSubscription('{{ opens.id }}').on('publication', function (ctx) {
+
+                        /** Если передан идентификатор поставки */
+                       if (ctx.data.number)
+                      {
+                          let number = document.getElementById('number-{{ opens.id }}');
+                          number.innerText = ctx.data.number;
+                          return;
+                      }
+
+                  if (ctx.data.identifier && ctx.data.identifier === 'complete')
+                      {
+                          let $supply = document.getElementById('supply-{{ opens.id }}');
+                          if ($supply )
+                          {
+                               $supply.removeAttribute('disabled');
+                          }
+
+                          $successSupplyToast = '{ "type":"success" , ' +
+                                '"header":"{{ 'breadcrumb.complete'|trans({}, 'ozon-package.supply') }}"  , ' +
+                                '"message" : "{{ 'success.complete'|trans({}, 'ozon-package.supply') }}" }';
+
+                            createToast(JSON.parse($successSupplyToast));
+
+                          return;
+                      }
+
+                  let identifier = ctx.data.identifier;
+
+                  let $package = document.getElementById('package-{{ opens.id }}');
+
+                    $package.innerHTML += ctx.data.product;
+
+                    $total = parseInt(document.getElementById('total-{{ opens.id }}').textContent);
+                    document.getElementById('total-{{ opens.id }}').textContent = $total + ctx.data.total
+
+                    $package.querySelectorAll('.modal-link').forEach(function (item, i, arr) {
+                        /* Добавляем атрибуты модального окна */
+                        item.dataset.bsTarget = '#modal';
+                        item.dataset.bsToggle = 'modal';
+                        modalLink(item);
+                    });
+
+            }).subscribe();
+
+		{% endif %}
+
+        /** обновляем кнопку печати после обновления стикером */
+		centrifuge.newSubscription('publish').on('publication', function (ctx) {
+
+                let identifier = ctx.data.identifier;
+
+                setTimeout(function uLxKzZxuUE()
+                {
+                     let $printButton = document.getElementById('print-'+ctx.data.identifier);
+
+                     if ($printButton)
+                     {
+                         $printButton.classList.remove('btn-danger');
+                         $printButton.classList.add('btn-primary');
+                         $printButton.setAttribute('disabled', '');
+                         $printButton.removeAttribute('disabled');
+                         $printButton.removeAttribute('id');
+
+                         $printButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" '
+                             + 'class="bi bi-printer-fill" viewBox="0 0 16 16">'
+                             + '<path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>'
+                             + '<path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>'
+                             + '</svg>';
+                     }
+
+                }, 500);
+
+            }).subscribe();
+
+
+        /** Удаляем из списка у всех продукт */
+		centrifuge.newSubscription('remove').on('publication', function (ctx) {
+
+            console.log(ctx.data.identifier);
+
+                let $identifier = document.getElementById(ctx.data.identifier);
+                if($identifier) { $identifier.remove(); }
+            }).subscribe();
+
+		centrifuge.connect();
+
+        return;
+    }
+
+    setTimeout(SpgGHaQzun, 100);
+
+}, 100);
+
+</script>
+
+{% endblock %}

@@ -1,6 +1,5 @@
-<?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +18,35 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-declare(strict_types=1);
+let filter = document.getElementById('package_filter');
 
-namespace BaksDev\Ozon\Package;
-
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-
-class BaksDevOzonPackageBundle extends AbstractBundle
+if(filter)
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    const packs = document.querySelectorAll('div.pack');
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    filter.addEventListener('input', function()
+    {
+        const filterText = this.value.toLowerCase();
+
+        packs.forEach(pack =>
+        {
+            const name = pack.dataset.name.toLowerCase();
+            if(name.includes(filterText))
+            {
+                pack.classList.remove('d-none');
+            } else
+            {
+                pack.classList.add('d-none');
+            }
+        });
+    });
+
+    document.getElementById('reset_filter').addEventListener('click', fn =>
+    {
+        filter.value = null;
+        packs.forEach(pack => { pack.classList.remove('d-none'); });
+    })
 }
-

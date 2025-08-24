@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,31 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-declare(strict_types=1);
+namespace BaksDev\Ozon\Package\Repository\Package\OzonPackageByOzonSupply;
 
-namespace BaksDev\Ozon\Package;
+use BaksDev\Ozon\Package\Entity\Supply\OzonSupply;
+use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
+use Generator;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-
-class BaksDevOzonPackageBundle extends AbstractBundle
+interface OzonPackageByOzonSupplyInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    /** Идентификатор поставки Ozon */
+    public function forOzonSupply(OzonSupply|OzonSupplyUid|string $supply): self;
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    /** Только распечатанные упаковки */
+    public function onlyPrint(): self;
+
+    /**
+     * Метод возвращает все идентификаторы упаковок в поставке
+     * @return Generator{int, OzonPackageByOzonSupplyResult}|false
+     */
+    public function findAll(): Generator|false;
+
+    /**
+     * @return array{int, OzonPackageByOzonSupplyResult}|false
+     */
+    public function toArray(): array|false;
 }
-

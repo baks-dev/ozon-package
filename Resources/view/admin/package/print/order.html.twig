@@ -1,0 +1,73 @@
+{# ПЕЧАТЬ #}
+<div class="{{ app.request.headers.get('X-Requested-With') is not null ? 'd-none' }} d-print-block p-0 w-100">
+
+    {# все упаковки #}
+    {% for package in packages %}
+
+        {# стикер для упаковки только один раз #}
+        {% if stickers[package] is defined %}
+            <img src="data:image/jpeg;base64, {{ stickers[package] }}" alt="ozon-sticker"/>
+        {% endif %}
+
+        {# честный знак и штрихкод - согласно настройкам штрихкода #}
+        {% for k in 1..settings.counter %}
+
+
+            {# Честный знак #}
+            {% if matrix[package] is defined %}
+
+                {# разрыв старницы #}
+                <div style="page-break-after: always !important;"></div>
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"
+                     style="height: 140px; max-height: 140px; max-width: 200px; margin-left: 20px;"
+                     fill="currentColor"
+                     viewBox="8 8 40 40">
+                    {{ matrix[package]|raw }}
+                </svg>
+
+            {% endif %}
+
+            {# Штрихкод #}
+            {% if products[package] is defined and barcodes[package] is defined %}
+
+                {# разрыв старницы #}
+                <div style="page-break-after: always !important;"></div>
+
+                <div style="height: 140px; max-height: 140px; max-width: 200px; margin-left: 20px; margin-top: 2px;">
+                    <div style="text-align: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="currentColor"
+                             style="width: 180px;"
+                             viewBox="5 0 125 25">
+                            {{ barcodes[package]|raw }}
+                        </svg>
+                    </div>
+
+                    {# Идентификатор штрихкода #}
+                    <div style="width: 100%; text-align: center; margin-bottom: 5px;">
+                        {{ products[package].productBarcode }}
+                    </div>
+
+                    {# Настройки штрихкода #}
+                    <div style="width: 100%; display: flex; justify-content: space-between; align-items: flex-end; font-size: 8px;">
+                        {{ include(_self|replace({ "order.html.twig" : "sticker.html.twig" }), {
+                            card : products[package],
+                            settings: settings,
+                            number: order,
+                        }) }}
+                    </div>
+
+                </div>
+            {% endif %}
+
+            {# закрывающий разрыв старницы #}
+            {% if loop.last %}
+                <div style="page-break-after: always !important;"></div>
+            {% endif %}
+
+        {% endfor %}
+
+    {% endfor %}
+
+</div>

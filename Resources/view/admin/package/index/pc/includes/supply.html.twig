@@ -1,0 +1,161 @@
+{% trans_default_domain('ozon-package.package') %}
+
+<section class="card card-flush alert {{ opens.status == 'close' ? 'alert-success' : 'alert-warning' }} p-0 w-100 "
+         style="background-image: var(--bs-gradient);">
+
+    <div class="card-body d-flex gap-3 justify-content-between">
+
+        <div class="w-25 d-flex gap-3 ">
+
+            <div>
+                <span role="tooltip"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="bottom"
+                      data-bs-delay='{"show":600,"hide":100}'
+                      title='{{ opens.status == 'close' ? 'QR поставки' : 'close'|trans({}, 'ozon-package.supply') }}'>
+                    <button
+                            id="supply-{{ opens.id }}"
+                            data-href="{{ path('ozon-package:admin.supply.print', { id : opens.id, print: true }) }}"
+                            {% if opens.status != 'close' %}
+                                disabled="disabled"
+                            {% endif %}
+                            class="btn-link btn p-1 icon disabled prnt"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal"
+                            style="width: 40px; height: 40px;">
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="45" height="45" fill="currentColor"
+                             class="bi bi-qr-code" viewBox="0 0 16 16">
+                            <path d="M2 2h2v2H2V2Z"></path>
+                            <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z"></path>
+                            <path d="M6 10v6H0v-6h6Zm-5 1v4h4v-4H1Zm11-9h2v2h-2V2Z"></path>
+                            <path d="M10 0v6h6V0h-6Zm5 1v4h-4V1h4ZM8 1V0h1v2H8v2H7V1h1Zm0 5V4h1v2H8ZM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8H6Zm0 0v1H2V8H1v1H0V7h3v1h3Zm10 1h-1V7h1v2Zm-1 0h-1v2h2v-1h-1V9Zm-4 0h2v1h-1v1h-1V9Zm2 3v-1h-1v1h-1v1H9v1h3v-2h1Zm0 0h3v1h-2v1h-1v-2Zm-4-1v1h1v-2H7v1h2Z"></path>
+                            <path d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z"></path>
+                        </svg>
+                    </button>
+                </span>
+
+            </div>
+
+            <div>
+
+                {# Номер поставки #}
+                <div class="text-nowrap">
+                    <small class="opacity-50">Номер:</small> &nbsp;
+
+                    <a{% if opens.identifier is empty %}
+                        id="number-{{ opens.id }}"
+                            {% endif %}
+                            href="{{ path('ozon-package:admin.supply.detail', { id: opens.id}) }}"
+                            class="fw-bolder text-decoration-none text-nowrap">
+                        {{ opens.identifier ?: 'Ожидается ...' }}
+                    </a>
+
+                </div>
+
+                {# Всего заказов #}
+                <div>
+                    <small class="opacity-50">Всего упаковок:</small> &nbsp;
+                    <strong id="total-{{ opens.id }}">{{ opens.total }}</strong> шт.
+                </div>
+
+            </div>
+        </div>
+
+
+        {# Упаковки заказов #}
+        <div class="w-100">
+
+            {% if print is not empty %}
+                <div class="w-100 d-flex mb-3 gap-3">
+                    <div class="w-100 d-flex gap-3">
+                        <div class="position-absolute" id="reset_filter">
+                            <button class="btn btn-link text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                     class="mb-1" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"></path>
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <input type="text"
+                               id="package_filter"
+                               class="border-light w-100 ps-5 form-control" placeholder="Поиск" autocomplete="off">
+                    </div>
+
+                    {# Распечатать все упаковки #}
+                    <div class="w-25"
+                         role="tooltip"
+                         data-bs-toggle="tooltip"
+                         data-bs-placement="bottom"
+                         data-bs-delay='{"show":600,"hide":100}'
+                         title="Печать всех стикеров поставки">
+
+                        <button class="btn btn-light disabled prnt"
+                                data-href="{{ path('ozon-package:admin.package.print.supply', { id: opens.id, print: true }) }}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-printer-fill" viewBox="0 0 16 16">
+                                <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+                                <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                            </svg>
+
+                            Все
+                        </button>
+
+                    </div>
+
+                </div>
+            {% endif %}
+
+            <div id="package-{{ opens.id }}" class="w-100 overflow-auto" style="max-height: 400px;">
+
+                {# Список продукции для печати #}
+                {% for card in print %}
+                    {{ include('@ozon-package/admin/package/add/pc/product.html.twig') }}
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <div class="text-end">
+
+            {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_OZON_SUPPLY_CLOSE')) and opens.status == 'new' %}
+
+                <div role="tooltip"
+                     data-bs-toggle="tooltip"
+                     data-bs-placement="bottom"
+                     data-bs-delay='{"show":600,"hide":100}'
+                     title="Отправить поставку на склад ozon">
+
+                    <button data-href="{{ path('ozon-package:admin.supply.close', { id: opens.id }) }}"
+                            id="close_supply_btn"
+                            class="btn modal-btn btn-danger modal-link disabled text-nowrap"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal">
+                        Закрыть поставку
+                    </button>
+                </div>
+
+
+            {% elseif opens.status != 'new' %}
+
+                <a href="{{ path('ozon-package:admin.supply.new') }}"
+                   class="btn btn-primary text-nowrap"
+                   role="tooltip"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="bottom"
+                   data-bs-delay='{"show":600,"hide":100}'
+                   title="Открыть новую поставку ozon">
+                    Открыть поставку
+                </a>
+
+            {% endif %}
+        </div>
+
+    </div>
+</section>

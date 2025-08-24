@@ -1,0 +1,128 @@
+{# @var card \BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidResult #}
+
+{% trans_default_domain 'ozon-package.package' %}
+
+{% set arr_property = card.categorySectionField|json_decode %}
+
+<div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
+
+    <div class="modal-content p-3 border-bottom border-5 border-primary">
+        {{ form_start(form) }}
+        <div class="modal-header border-0">
+
+            <div class='d-flex gap-3'>
+                <h5 class='lh-1'>
+                    {{ 'page.add'|trans }}
+                </h5>
+
+                <div class='d-flex gap-2 align-items-center'>
+
+                    {# Свойства, учавствующие в превью карточки #}
+                    {% for name_property in  arr_property | filter(props => props.field_card is defined and props.field_card == true) %}
+                        {{ name_property.field_value|call_twig_func(name_property.field_type~'_render') }}
+                    {% endfor %}
+
+                </div>
+            </div>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+
+        <div class="modal-body d-flex justify-content-between ">
+
+            <div class="d-flex justify-content-between gap-3 align-items-center w-100">
+
+                {# Обложка #}
+                {% set image_path = cdn_image_path(card.productImage, card.productImageExt, card.productImageCdn) %}
+
+                {# ФОТО ПРОДУКТА  #}
+                <div>
+                    <div class="icon rounded-2 mb-2 bg-cover p-1"
+                         style="width: 50px; height: 75px; background-image: url('{{ image_path }}');"
+                    ></div>
+                </div>
+
+                <div class='w-100'>
+
+                    <div class="text-truncate"
+                         style="max-width: 230px"
+                         role="tooltip"
+                         data-bs-toggle="tooltip"
+                         data-bs-placement="top"
+                         title="{{ card.productName }}"
+                    >
+                        <a href="{# /admin/product/edit/06420615-8809-4662-9a2c-e3643dc95c48 #}"
+                           class="fw-bolder mb-1 text-dark text-decoration-none">
+                            {{ card.productName|capitalize }}
+                        </a>
+                    </div>
+
+                    <div>
+                        {% if card.productOfferName %}
+                            <small class="opacity-50">{{ card.productOfferName }}:</small>&nbsp;
+                            <strong>{{ card.productOfferValue|call_twig_func(card.productOfferReference) }} {{ card.productOfferPostfix }}</strong>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if card.productVariationName %}
+                            <small class="opacity-50">{{ card.productVariationName }}:</small>&nbsp;
+                            <strong>{{ card.productVariationValue|call_twig_func(card.productVariationReference) }} {{ card.productVariationPostfix }}</strong>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if card.productModificationName %}
+                            <small class="opacity-50">{{ card.productModificationName }}:</small>&nbsp;
+                            <strong>{{ card.productModificationValue|call_twig_func(card.productModificationReference) }} {{ card.productModificationPostfix }}</strong>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-center align-items-center text-center w-50">
+
+                    <button type='button' class="btn btn-lg btn-link text-decoration-none"
+                            aria-label="Отнять количество" id="minus">
+
+                    <span class="h4 text-muted opacity-50">-</span>
+                    </button>
+
+                    <span role="tooltip"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="bottom"
+                          data-bs-delay='{"show":600,"hide":100}'
+                          title="Количество выполненных заказов">
+
+                        {{ form_widget(form.total, {
+
+                            attr: {
+
+                                value : form.total.vars.data ?:1,
+                                class : 'form-control-lg mx-1 rounded-3 total',
+                                style: 'width: 60px;',
+                                'data-max' : form.total.vars.data ?: 1,
+                            }
+                        }) }}
+                    </span>
+
+                    <button type='button' class="btn btn-lg btn-link text-decoration-none"
+                            aria-label="Добавить количество" id="plus"
+                    >
+                        <span class="h5 text-muted opacity-50">+</span>
+                    </button>
+
+                </div>
+
+
+                <div class="w-50">
+                    {{ form_widget(form.package_orders, { label: '
+                    <span>'~ 'btn.add'|trans({}, 'core.btn') ~'</span>
+                    <span class="spinner-border spinner-border-sm vertical-middle d-none"></span>'}) }}
+                </div>
+
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+

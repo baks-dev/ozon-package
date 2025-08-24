@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,30 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Security\Package;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Users\Profile\Group\Security\RoleInterface;
+use BaksDev\Users\Profile\Group\Security\VoterInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+#[AutoconfigureTag('baks.security.voter')]
+final class VoterIndex implements VoterInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public const string VOTER = 'INDEX';
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public static function getVoter(): string
+    {
+        return Role::ROLE.'_'.self::VOTER;
+    }
+
+    public function equals(RoleInterface $role): bool
+    {
+        return $role->getRole() === Role::ROLE;
+    }
 }
 

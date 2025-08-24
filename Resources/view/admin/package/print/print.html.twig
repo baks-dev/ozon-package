@@ -1,0 +1,112 @@
+{# ПЕЧАТЬ #}
+
+<div class="{{ app.request.headers.get('X-Requested-With') is not null ? 'd-none' }} d-print-block p-0 w-100">
+
+    {% set break = false %}
+
+    {% if settings != null %}
+
+        {% for package in packages %}
+
+            {# Печатаем количество стикеров #}
+            {% set counter = 0 %}
+
+            {# @var setting \BaksDev\Wildberries\Products\Repository\Barcode\WbBarcodeSettings\WbBarcodeSettingsResult #}
+            {% set setting = settings[package] %}
+
+            {% if settings[package] is defined and settings[package] != false %}
+                {% set counter = setting.counter %}
+            {% endif %}
+
+
+            {% if orders[package] is defined %}
+
+                {% for key, order in orders[package] %}
+
+                    {% set orderInfo = key|split(':') %}
+
+                    {% set number = orderInfo[0] %}
+                    {% set postingNumber = orderInfo[1] %}
+
+                    {% if break %}
+                        {# разрыв старницы #}
+                        <div style="page-break-after: always !important;"></div>
+                    {% endif %}
+
+                    {# Ozon #}
+                    {% if stickers[postingNumber] is defined %}
+
+                        {#                        <div style="height: 140px; max-height: 140px; max-width: 200px; margin-left: 20px;"> #}
+                        <img src="data:image/jpeg;base64, {{ stickers[postingNumber] }}" alt="ozon-sticker"/>
+                        {#                        </div> #}
+                    {% endif %}
+
+                    {% for i in 1..counter %}
+
+                        {# QRCode Честный Знак #}
+
+                        {% if matrix[order] is defined %}
+
+                            {# разрыв старницы #}
+                            <div style="page-break-after: always !important;"></div>
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"
+                                 style="height: 140px; max-height: 140px; max-width: 200px; margin-left: 20px;"
+                                 fill="currentColor"
+                                 viewBox="8 8 40 40">
+                                {{ matrix[order]|raw }}
+                            </svg>
+
+                        {% endif %}
+
+                        {# Штрикхкод #}
+
+                        {% if barcodes[package] is defined %}
+
+                            {# разрыв старницы #}
+                            <div style="page-break-after: always !important;"></div>
+
+                            <div style="height: 140px; max-height: 140px; max-width: 200px; margin-left: 20px; margin-top: 2px;">
+
+                                <div style="text-align: center;">
+                                    <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="currentColor"
+                                            style="width: 180px;"
+                                            viewBox="5 0 125 25"
+                                    >
+                                        {{ barcodes[package]|raw }}
+                                    </svg>
+                                </div>
+
+                                {# Идентификатор штрихкода #}
+
+                                {% if products[package].productBarcode %}
+                                    <div style="width: 100%; text-align: center; margin-bottom: 5px;">
+                                        {{ products[package].productBarcode }}
+                                    </div>
+                                {% endif %}
+
+                                <div style="width: 100%; display: flex; justify-content: space-between; align-items: flex-end; font-size: 8px;">
+                                    {{ include(_self|replace({ "print.html.twig" : "sticker.html.twig" }), {
+                                        card : products[package],
+                                        settings: settings[package]
+                                    }) }}
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% set break = true %}
+
+                {% endfor %}
+            {% endif %}
+
+        {% endfor %}
+
+    {% endif %}
+
+</div>

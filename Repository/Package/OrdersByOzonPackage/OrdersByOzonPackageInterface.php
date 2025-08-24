@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,29 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-declare(strict_types=1);
+namespace BaksDev\Ozon\Package\Repository\Package\OrdersByOzonPackage;
 
-namespace BaksDev\Ozon\Package;
+use BaksDev\Ozon\Package\Entity\Package\Event\OzonPackageEvent;
+use BaksDev\Ozon\Package\Type\Package\Event\OzonPackageEventUid;
+use Generator;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-
-class BaksDevOzonPackageBundle extends AbstractBundle
+interface OrdersByOzonPackageInterface
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public function byPackageEvent(OzonPackageEvent|OzonPackageEventUid|string $event): self;
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    /**
+     * Метод получает заказы в упаковке со стикерами
+     *
+     * @return Generator{int, OrdersByOzonPackageResult}|false
+     */
+    public function findAll(): Generator|false;
+
+    /**
+     * @return array{int, OrdersByOzonPackageResult}|false
+     */
+    public function toArray(): array|false;
+
 }
-

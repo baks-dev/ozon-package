@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,45 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Messenger\Supply;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Ozon\Package\Type\Supply\Event\OzonSupplyEventUid;
+use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+final class OzonSupplyMessage
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public function __construct(
+        private OzonSupplyUid|string $id,
+        private OzonSupplyEventUid|string $event,
+        private OzonSupplyEventUid|string|null $last = null,
+    ) {}
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    /**
+     * Идентификатор
+     */
+    public function getId(): OzonSupplyUid
+    {
+        return new OzonSupplyUid($this->id);
+    }
+
+    /**
+     * Идентификатор события
+     */
+    public function getEvent(): OzonSupplyEventUid
+    {
+        return new OzonSupplyEventUid($this->event);
+    }
+
+    /**
+     * Идентификатор предыдущего события
+     */
+    public function getLast(): ?OzonSupplyEventUid
+    {
+        return $this->last ? new OzonSupplyEventUid($this->last) : null;
+    }
 }
-

@@ -23,14 +23,13 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Type\Supply\Id;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Core\Type\UidType\Uid;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+final class OzonSupplyUid extends Uid
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public const string TEST = 'af207def-e37e-7cbd-80d6-ef1946165c21';
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public const string TYPE = 'ozon_supply';
 }
-

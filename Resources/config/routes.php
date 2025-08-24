@@ -21,16 +21,19 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
-namespace BaksDev\Ozon\Package;
+return function(RoutingConfigurator $routes) {
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+    $MODULE = substr(__DIR__, 0, strpos(__DIR__, "Resources"));
 
-class BaksDevOzonPackageBundle extends AbstractBundle
-{
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    $routes->import(
+        $MODULE.'Controller',
+        'attribute',
+        false,
+        $MODULE.implode(DIRECTORY_SEPARATOR, ['Controller', '**', '*Test.php'])
+    )
+        ->prefix(\BaksDev\Core\Type\Locale\Locale::routes())
+        ->namePrefix('ozon-package:');
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
-}
-
+};

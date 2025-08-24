@@ -21,16 +21,16 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-namespace BaksDev\Ozon\Package;
+use BaksDev\Ozon\Package\BaksDevOzonPackageBundle;
+use Symfony\Config\TwigConfig;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+return static function(TwigConfig $twig) {
 
-class BaksDevOzonPackageBundle extends AbstractBundle
-{
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    $twig->path(
+        BaksDevOzonPackageBundle::PATH.implode(DIRECTORY_SEPARATOR, ['Resources', 'view', '']),
+        'ozon-package'
+    );
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
-}
-
+};

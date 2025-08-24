@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,30 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Ozon\Package;
+namespace BaksDev\Ozon\Package\Repository\Package\CountOrdersInOzonSupply\Tests;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Ozon\Package\Repository\Package\CountOrdersInOzonSupply\TotalOrdersInOzonSupplyInterface;
+use PHPUnit\Framework\Attributes\Group;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\Attribute\When;
 
-class BaksDevOzonPackageBundle extends AbstractBundle
+/**
+ * @group ozon-package
+ */
+#[Group('ozon-package')]
+#[When(env: 'test')]
+class CountOrdersInOzonSupplyRepositoryTest extends KernelTestCase
 {
-    public const string NAMESPACE = __NAMESPACE__.'\\';
+    public function testUseCase(): void
+    {
+        /** @var TotalOrdersInOzonSupplyInterface $CountOrdersOzonSupplyInterface */
+        $CountOrdersOzonSupplyInterface = self::getContainer()->get(TotalOrdersInOzonSupplyInterface::class);
 
-    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
+        self::assertTrue(true);
+    }
 }
-
