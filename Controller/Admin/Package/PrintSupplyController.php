@@ -296,8 +296,8 @@ final class PrintSupplyController extends AbstractController
                 'settings' => $this->settings,
                 'products' => $this->products,
             ],
-            routingName: 'admin.package',
-            file: '/print/print.html.twig'
+            'admin.package',
+            '/print/print.html.twig'
         );
 
         /**

@@ -256,8 +256,8 @@ final class PrintOrderController extends AbstractController
                 'order' => $this->order,
                 'stickers' => $this->stickers,
             ],
-            routingName: 'admin.package',
-            file: '/print/order.html.twig'
+            'admin.package',
+            '/print/order.html.twig'
         );
     }
 }

@@ -276,8 +276,8 @@ final class PrintPackageController extends AbstractController
                 'settings' => $this->settings,
                 'stickers' => $this->stickers,
             ],
-            routingName: 'admin.package',
-            file: '/print/print.html.twig'
+            'admin.package',
+            '/print/print.html.twig'
         );
 
         /** Если были получены все стикеры ОЗОН - отмечаем распечатанным */
