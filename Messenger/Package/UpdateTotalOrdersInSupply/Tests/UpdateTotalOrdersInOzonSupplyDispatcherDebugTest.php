@@ -39,9 +39,6 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-/**
- * @group ozon-package
- */
 #[Group('ozon-package')]
 #[When(env: 'test')]
 class UpdateTotalOrdersInOzonSupplyDispatcherDebugTest extends KernelTestCase

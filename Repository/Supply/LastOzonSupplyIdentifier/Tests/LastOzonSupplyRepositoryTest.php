@@ -30,12 +30,11 @@ use BaksDev\Ozon\Package\Repository\Supply\LastOzonSupplyIdentifier\LastOzonSupp
 use BaksDev\Ozon\Package\Repository\Supply\LastOzonSupplyIdentifier\LastOzonSupplyResult;
 use BaksDev\Ozon\Package\Type\Supply\Status\OzonSupplyStatus\Collection\OzonSupplyStatusCollection;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionClass;
+use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group ozon-package
- */
 #[When(env: 'test')]
 #[Group('ozon-package')]
 class LastOzonSupplyRepositoryTest extends KernelTestCase
@@ -56,8 +55,8 @@ class LastOzonSupplyRepositoryTest extends KernelTestCase
             ->forProfile($_SERVER['TEST_PROFILE'])
             ->find();
 
-        $reflectionClass = new \ReflectionClass(LastOzonSupplyResult::class);
-        $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $reflectionClass = new ReflectionClass(LastOzonSupplyResult::class);
+        $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
         foreach($methods as $method)
         {

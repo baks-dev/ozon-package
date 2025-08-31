@@ -39,10 +39,6 @@ use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group ozon-package
- * @group ozon-package-usecase
- */
 #[Group('ozon-package')]
 #[When(env: 'test')]
 final class NewOzonSupplyHandleTest extends KernelTestCase

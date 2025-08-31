@@ -33,24 +33,21 @@ use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 use BaksDev\Ozon\Package\Type\Supply\Status\OzonSupplyStatus\Collection\OzonSupplyStatusCollection;
 use BaksDev\Ozon\Package\UseCase\Supply\Total\OzonSupplyInvariableDTO;
 use BaksDev\Ozon\Package\UseCase\Supply\Total\OzonSupplyTotalHandler;
+use PHPUnit\Framework\Attributes\DependsOnClass;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group ozon-package
- * @group ozon-package-usecase
- *
- * @depends BaksDev\Ozon\Package\UseCase\Supply\New\Tests\NewOzonSupplyHandleTest::class
- */
 #[Group('ozon-package')]
 #[When(env: 'test')]
 final class TotalOzonSupplyHandleTest extends KernelTestCase
 {
+    #[DependsOnClass(NewOzonSupplyHandleTest::class)]
     public function testUseCase(): void
     {
         /**
          * Инициируем статус для итератора тегов
+         *
          * @var OzonSupplyStatusCollection $OzonSupplyStatus
          */
         $OzonSupplyStatus = self::getContainer()->get(OzonSupplyStatusCollection::class);
