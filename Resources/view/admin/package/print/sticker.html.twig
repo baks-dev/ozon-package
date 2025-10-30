@@ -6,7 +6,7 @@
     <div>
         <div>Номер: {{ number }}</div>
 
-        {% if settings.name and card.productName %}
+        {% if settings and settings.name and card.productName %}
             <div style="white-space: nowrap;">
                 Название: {{ string_width(card.productName, 32) }}
             </div>
