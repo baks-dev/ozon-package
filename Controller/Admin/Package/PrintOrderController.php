@@ -40,7 +40,7 @@ use BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById\OrderInOzonPa
 use BaksDev\Ozon\Products\Repository\Barcode\OzonBarcodeSettings\OzonBarcodeSettingsInterface;
 use BaksDev\Ozon\Products\Repository\Barcode\OzonBarcodeSettings\OzonBarcodeSettingsResult;
 use BaksDev\Ozon\Type\Id\OzonTokenUid;
-use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidInterface;
+use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByEventInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -84,7 +84,7 @@ final class PrintOrderController extends AbstractController
         BarcodeWrite $BarcodeWrite,
         MessageDispatchInterface $MessageDispatch,
         OrderInOzonPackageByIdInterface $OzonPackageOrderRepository,
-        ProductDetailByUidInterface $productDetailRepository,
+        ProductDetailByEventInterface $productDetailRepository,
         OzonBarcodeSettingsInterface $barcodeSettingsRepository,
     ): Response
     {

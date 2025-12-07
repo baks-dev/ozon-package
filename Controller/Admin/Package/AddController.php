@@ -42,8 +42,8 @@ use BaksDev\Ozon\Package\Repository\Supply\OzonSupplyIdentifierByStatuses\OzonSu
 use BaksDev\Ozon\Package\UseCase\Package\Pack\Orders\OzonPackageOrderDTO;
 use BaksDev\Ozon\Package\UseCase\Package\Pack\OzonPackageDTO;
 use BaksDev\Ozon\Package\UseCase\Package\Pack\OzonPackageHandler;
-use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidInterface;
-use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidResult;
+use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByEventInterface;
+use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByEventResult;
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
@@ -74,7 +74,7 @@ final class AddController extends AbstractController
         CentrifugoPublishInterface $CentrifugoPublish,
         OzonPackageHandler $OzonPackageHandler,
         ExtraditionProductStockHandler $ExtraditionProductStockHandler,
-        ProductDetailByUidInterface $productDetailByUidRepository,
+        ProductDetailByEventInterface $productDetailByUidRepository,
         ExistOrderInOzonPackageInterface $existOrderInOzonPackageRepository,
         OzonSupplyIdentifierByStatusInterface $ozonSupplyIdentifierByStatusRepository,
         RelevantNewOrderByProductInterface $relevantNewOrderByProductRepository,
@@ -109,7 +109,8 @@ final class AddController extends AbstractController
         $form->handleRequest($Request);
 
         /** Информация о продукте
-         * @var ProductDetailByUidResult|false $productDetail
+         *
+         * @var ProductDetailByEventResult|false $productDetail
          */
         $productDetail = $productDetailByUidRepository
             ->event($manufacturePartProducts->getProduct())

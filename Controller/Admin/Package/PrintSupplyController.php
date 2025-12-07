@@ -45,7 +45,7 @@ use BaksDev\Ozon\Package\Type\Package\Id\OzonPackageUid;
 use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 use BaksDev\Ozon\Products\Repository\Barcode\OzonBarcodeSettings\OzonBarcodeSettingsInterface;
 use BaksDev\Ozon\Type\Id\OzonTokenUid;
-use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidInterface;
+use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByEventInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -89,7 +89,7 @@ final class PrintSupplyController extends AbstractController
         BarcodeWrite $BarcodeWrite,
         CentrifugoPublishInterface $CentrifugoPublish,
         MessageDispatchInterface $MessageDispatch,
-        ProductDetailByUidInterface $productDetailRepository,
+        ProductDetailByEventInterface $productDetailRepository,
         OzonPackageByOzonSupplyInterface $ozonPackageByOzonSupplyRepository,
         OrdersByOzonPackageInterface $ordersByOzonPackageRepository,
         OzonBarcodeSettingsInterface $ozonBarcodeSettingsRepository,

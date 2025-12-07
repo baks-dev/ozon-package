@@ -41,7 +41,7 @@ use BaksDev\Ozon\Package\Repository\Package\OrdersByOzonPackage\OrdersByOzonPack
 use BaksDev\Ozon\Package\Repository\Package\OrdersByOzonPackage\OrdersByOzonPackageResult;
 use BaksDev\Ozon\Products\Repository\Barcode\OzonBarcodeSettings\OzonBarcodeSettingsInterface;
 use BaksDev\Ozon\Type\Id\OzonTokenUid;
-use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidInterface;
+use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByEventInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -87,7 +87,7 @@ final class PrintPackageController extends AbstractController
         CentrifugoPublishInterface $CentrifugoPublish,
         MessageDispatchInterface $MessageDispatch,
         OrdersByOzonPackageInterface $orderByOzonPackageRepository,
-        ProductDetailByUidInterface $productDetailByUidRepository,
+        ProductDetailByEventInterface $productDetailByUidRepository,
         OzonBarcodeSettingsInterface $ozonBarcodeSettingsRepository,
     ): Response
     {
