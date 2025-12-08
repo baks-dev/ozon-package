@@ -38,7 +38,9 @@ final class PrintOzonPackageHandler extends AbstractHandler
         $this->clear();
 
         /** @var OzonPackageSupply $OzonPackageSupply */
-        $OzonPackageSupply = $this->getRepository(OzonPackageSupply::class)->find($command->getMain());
+        $OzonPackageSupply = $this
+            ->getRepository(OzonPackageSupply::class)
+            ->find($command->getMain());
 
         if($this->validatorCollection->add($OzonPackageSupply, context: [self::class.':'.__LINE__]))
         {

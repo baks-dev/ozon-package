@@ -34,11 +34,10 @@ final class OzonSupplyTotalHandler extends AbstractHandler
     {
         $this->setCommand($command);
 
-        /** Валидация OzonSupplyOpenDTO  */
-        $this->validatorCollection->add($command);
-
         /** @var OzonSupplyInvariable $OzonSupplyInvariable */
-        $OzonSupplyInvariable = $this->getRepository(OzonSupplyInvariable::class)->find($command->getMain());
+        $OzonSupplyInvariable = $this
+            ->getRepository(OzonSupplyInvariable::class)
+            ->find($command->getMain());
 
         if(false === $this->validatorCollection->add($OzonSupplyInvariable, context: [self::class.':'.__LINE__]))
         {
