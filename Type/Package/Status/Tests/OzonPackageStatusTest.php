@@ -55,7 +55,10 @@ final class OzonPackageStatusTest extends KernelTestCase
             self::assertTrue($OzonPackageStatus->equals($OzonPackageStatus)); // объект класса
 
             $OzonPackageStatusType = new OzonPackageStatusType();
-            $platform = $this->getMockForAbstractClass(AbstractPlatform::class);
+
+            $platform = $this
+                ->getMockBuilder(AbstractPlatform::class)
+                ->getMock();
 
             $convertToDatabase = $OzonPackageStatusType->convertToDatabaseValue($OzonPackageStatus, $platform);
             self::assertEquals($OzonPackageStatus->getPackageStatusValue(), $convertToDatabase);

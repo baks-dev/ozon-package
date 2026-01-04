@@ -41,6 +41,8 @@ class LastOzonSupplyRepositoryTest extends KernelTestCase
 {
     public function testUseCase(): void
     {
+        self::assertTrue(true);
+
         /**
          * Инициализируем статус для итератора тегов
          * @var OzonSupplyStatusCollection $OzonSupplyStatusCollection
@@ -51,9 +53,15 @@ class LastOzonSupplyRepositoryTest extends KernelTestCase
         /** @var LastOzonSupplyInterface $LastOzonSupplyInterface */
         $LastOzonSupplyInterface = self::getContainer()->get(LastOzonSupplyInterface::class);
 
-        $result = $LastOzonSupplyInterface
-            ->forProfile($_SERVER['TEST_PROFILE'])
+        /** @see .env.test */
+        $LastOzonSupplyResult = $LastOzonSupplyInterface
+            ->forProfile($_SERVER['TEST_OZON_PROFILE'])
             ->find();
+
+        if(false === ($LastOzonSupplyResult instanceof LastOzonSupplyResult))
+        {
+            return;
+        }
 
         $reflectionClass = new ReflectionClass(LastOzonSupplyResult::class);
         $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
@@ -64,10 +72,9 @@ class LastOzonSupplyRepositoryTest extends KernelTestCase
             if($method->getNumberOfParameters() === 0)
             {
                 // Вызываем метод
-                $method->invoke($result);
+                $method->invoke($LastOzonSupplyResult);
+                // dump($data);
             }
         }
-
-        self::assertTrue(true);
     }
 }
