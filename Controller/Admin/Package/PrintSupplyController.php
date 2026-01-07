@@ -160,7 +160,7 @@ final class PrintSupplyController extends AbstractController
 
                     if(null !== $ozonSticker)
                     {
-                        $this->stickers[$order->getPostingNumber()] = base64_encode($ozonSticker);
+                        $this->stickers[$order->getPostingNumber()] = $ozonSticker;
                     }
                     else
                     {
@@ -169,7 +169,7 @@ final class PrintSupplyController extends AbstractController
                 }
                 else
                 {
-                    $this->stickers[$order->getPostingNumber()] = base64_encode($ozonSticker);
+                    $this->stickers[$order->getPostingNumber()] = $ozonSticker;
                 }
 
                 /**

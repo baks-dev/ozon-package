@@ -145,12 +145,12 @@ final class PrintOrderController extends AbstractController
 
                 if(null !== $ozonSticker)
                 {
-                    $this->stickers[$ozonPackageUid] = base64_encode($ozonSticker);
+                    $this->stickers[$ozonPackageUid] = $ozonSticker;
                 }
             }
             else
             {
-                $this->stickers[$ozonPackageUid] = base64_encode($ozonSticker);
+                $this->stickers[$ozonPackageUid] = $ozonSticker;
             }
 
             /**
