@@ -66,7 +66,11 @@ final readonly class UpdateTotalOrdersInOzonSupplyDispatcher
             ->forSupply($OzonSupplyUid)
             ->total();
 
-        $OzonSupplyInvariableDTO = new OzonSupplyInvariableDTO($OzonSupplyUid, $total);
+        $OzonSupplyInvariableDTO = new OzonSupplyInvariableDTO(
+            main: $OzonSupplyUid,
+            total: $total,
+        );
+
         $this->SupplyTotalHandler->handle($OzonSupplyInvariableDTO);
     }
 }
