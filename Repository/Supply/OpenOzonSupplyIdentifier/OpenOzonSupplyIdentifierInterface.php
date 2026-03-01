@@ -26,7 +26,9 @@ namespace BaksDev\Ozon\Package\Repository\Supply\OpenOzonSupplyIdentifier;
 use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
+#[Autoconfigure(public: true)]
 interface OpenOzonSupplyIdentifierInterface
 {
     public function forProfile(UserProfile|UserProfileUid|string $profile): self;

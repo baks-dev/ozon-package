@@ -30,7 +30,7 @@ use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Ozon\Package\Entity\Package\Event\Supply\OzonPackageSupply;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler]
+#[AsMessageHandler(priority: 0)]
 final class PrintOzonPackageHandler extends AbstractHandler
 {
     public function __invoke(PrintOzonPackageMessage $command): void

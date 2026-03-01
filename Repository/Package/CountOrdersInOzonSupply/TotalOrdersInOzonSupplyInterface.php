@@ -26,7 +26,9 @@ namespace BaksDev\Ozon\Package\Repository\Package\CountOrdersInOzonSupply;
 
 use BaksDev\Ozon\Package\Entity\Supply\OzonSupply;
 use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
+#[Autoconfigure(public: true)]
 interface TotalOrdersInOzonSupplyInterface
 {
     public function forSupply(OzonSupply|OzonSupplyUid|string $supply): self;

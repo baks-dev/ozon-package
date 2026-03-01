@@ -31,11 +31,13 @@ use BaksDev\Ozon\Package\Repository\Package\CountOrdersInOzonSupply\TotalOrdersI
 use BaksDev\Ozon\Package\Repository\Package\OzonSupplyByOzonPackage\OzonSupplyByOzonPackageInterface;
 use BaksDev\Ozon\Package\UseCase\Supply\Total\OzonSupplyInvariableDTO;
 use BaksDev\Ozon\Package\UseCase\Supply\Total\OzonSupplyTotalHandler;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * Метод пересчитывает общее количество заказов в поставке OzonSupply
  */
+#[Autoconfigure(public: true)]
 #[AsMessageHandler(priority: 0)]
 final readonly class UpdateTotalOrdersInOzonSupplyDispatcher
 {
