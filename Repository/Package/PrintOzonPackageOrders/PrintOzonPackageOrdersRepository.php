@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -44,9 +44,12 @@ use BaksDev\Products\Category\Entity\Offers\Variation\Modification\Trans\Categor
 use BaksDev\Products\Category\Entity\Offers\Variation\Trans\CategoryProductVariationTrans;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
 use BaksDev\Products\Product\Entity\Info\ProductInfo;
+use BaksDev\Products\Product\Entity\Offers\Barcode\ProductOfferBarcode;
 use BaksDev\Products\Product\Entity\Offers\Image\ProductOfferImage;
 use BaksDev\Products\Product\Entity\Offers\ProductOffer;
+use BaksDev\Products\Product\Entity\Offers\Variation\Barcode\ProductVariationBarcode;
 use BaksDev\Products\Product\Entity\Offers\Variation\Image\ProductVariationImage;
+use BaksDev\Products\Product\Entity\Offers\Variation\Modification\Barcode\ProductModificationBarcode;
 use BaksDev\Products\Product\Entity\Offers\Variation\Modification\Image\ProductModificationImage;
 use BaksDev\Products\Product\Entity\Offers\Variation\Modification\ProductModification;
 use BaksDev\Products\Product\Entity\Offers\Variation\ProductVariation;
@@ -169,13 +172,23 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_offer.id as product_offer_uid')
             ->addSelect('product_offer.value as product_offer_value')
             ->addSelect('product_offer.postfix as product_offer_postfix')
-            ->addSelect('product_offer.barcode as product_offer_barcode')
+            //            ->addSelect('product_offer.barcode_old as product_offer_barcode')
             ->addSelect('product_offer.name as product_offer_detail_name')
             ->leftJoin(
                 'ord_product',
                 ProductOffer::class,
                 'product_offer',
                 'product_offer.id = ord_product.offer OR product_offer.id IS NULL'
+            );
+
+        /** OfferBarcode */
+
+        $dbal
+            ->leftJoin(
+                'product_offer',
+                ProductOfferBarcode::class,
+                'product_offer_barcode',
+                'product_offer_barcode.offer = product_offer.id'
             );
 
         /* Получаем тип торгового предложения */
@@ -206,12 +219,22 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_variation.id as product_variation_uid')
             ->addSelect('product_variation.value as product_variation_value')
             ->addSelect('product_variation.postfix as product_variation_postfix')
-            ->addSelect('product_variation.postfix as product_variation_barcode')
+            //            ->addSelect('product_variation.postfix as product_variation_barcode')
             ->leftJoin(
                 'ord_product',
                 ProductVariation::class,
                 'product_variation',
                 'product_variation.id = ord_product.variation OR product_variation.id IS NULL '
+            );
+
+        /** Variation Barcode */
+
+        $dbal
+            ->leftJoin(
+                'product_variation',
+                ProductVariationBarcode::class,
+                'product_variation_barcode',
+                'product_variation_barcode.variation = product_variation.id'
             );
 
 
@@ -242,7 +265,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_modification.id as product_modification_uid')
             ->addSelect('product_modification.value as product_modification_value')
             ->addSelect('product_modification.postfix as product_modification_postfix')
-            ->addSelect('product_modification.barcode as product_modification_barcode')
+            //            ->addSelect('product_modification.barcode_old as product_modification_barcode')
             ->leftJoin(
                 'ord_product',
                 ProductModification::class,
@@ -250,6 +273,15 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_modification.id = ord_product.modification OR product_modification.id IS NULL '
             );
 
+        /** Modification Barcode */
+
+        $dbal
+            ->leftJoin(
+                'product_modification',
+                ProductModificationBarcode::class,
+                'product_modification_barcode',
+                'product_modification_barcode.modification = product_modification.id'
+            );
 
         /* Получаем тип модификации множественного варианта */
         $dbal
@@ -273,11 +305,37 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             );
 
 
+        /** Штрихкоды продукта */
+
+        $dbal->addSelect(
+            "
+            JSON_AGG
+                    (DISTINCT
+         			CASE
+         			    WHEN product_modification_barcode.value IS NOT NULL
+                        THEN product_modification_barcode.value
+                        
+                        WHEN product_variation_barcode.value IS NOT NULL
+                        THEN product_variation_barcode.value
+                        
+                        WHEN product_offer_barcode.value IS NOT NULL
+                        THEN product_offer_barcode.value
+                        
+                        WHEN product_info.barcode IS NOT NULL
+                        THEN product_info.barcode
+                        
+                        ELSE NULL
+                    END
+                    )
+                    AS barcodes"
+        );
+
         $dbal->addSelect('
             COALESCE(
-                product_modification.barcode, 
-                product_variation.barcode, 
-                product_offer.barcode
+                product_modification.barcode_old, 
+                product_variation.barcode_old, 
+                product_offer.barcode_old,
+                product_info.barcode
             ) AS barcode
 		');
 
@@ -370,6 +428,9 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
 		');
 
         $dbal->addOrderBy('package_orders.sort');
+
+        $dbal->addGroupBy('package_orders.sort');
+        $dbal->allGroupByExclude();
 
         $dbal->enableCache('ozon-package', 3600);
 
@@ -478,13 +539,23 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_offer.id as product_offer_uid')
             ->addSelect('product_offer.value as product_offer_value')
             ->addSelect('product_offer.postfix as product_offer_postfix')
-            ->addSelect('product_offer.barcode as product_offer_barcode')
+            ->addSelect('product_offer.barcode_old as product_offer_barcode')
             ->addSelect('product_offer.name as product_offer_detail_name')
             ->leftJoin(
                 'ord_product',
                 ProductOffer::class,
                 'product_offer',
                 'product_offer.id = ord_product.offer OR product_offer.id IS NULL'
+            );
+
+        /** Offer Barcode */
+
+        $dbal
+            ->leftJoin(
+                'product_offer',
+                ProductOfferBarcode::class,
+                'product_offer_barcode',
+                'product_offer_barcode.offer = product_offer.id'
             );
 
         /* Получаем тип торгового предложения */
@@ -515,12 +586,22 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_variation.id as product_variation_uid')
             ->addSelect('product_variation.value as product_variation_value')
             ->addSelect('product_variation.postfix as product_variation_postfix')
-            ->addSelect('product_variation.postfix as product_variation_barcode')
+            ->addSelect('product_variation.barcode_old as product_variation_barcode')
             ->leftJoin(
                 'ord_product',
                 ProductVariation::class,
                 'product_variation',
                 'product_variation.id = ord_product.variation OR product_variation.id IS NULL '
+            );
+
+        /** Variation Barcode */
+
+        $dbal
+            ->leftJoin(
+                'product_variation',
+                ProductVariationBarcode::class,
+                'product_variation_barcode',
+                'product_variation_barcode.variation = product_variation.id'
             );
 
 
@@ -551,7 +632,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_modification.id as product_modification_uid')
             ->addSelect('product_modification.value as product_modification_value')
             ->addSelect('product_modification.postfix as product_modification_postfix')
-            ->addSelect('product_modification.barcode as product_modification_barcode')
+            ->addSelect('product_modification.barcode_old as product_modification_barcode')
             ->leftJoin(
                 'ord_product',
                 ProductModification::class,
@@ -559,6 +640,15 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_modification.id = ord_product.modification OR product_modification.id IS NULL '
             );
 
+        /** Modification Barcode */
+
+        $dbal
+            ->leftJoin(
+                'product_modification',
+                ProductModificationBarcode::class,
+                'product_modification_barcode',
+                'product_modification_barcode.modification = product_modification.id'
+            );
 
         /* Получаем тип модификации множественного варианта */
         $dbal
@@ -581,13 +671,22 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local'
             );
 
-        $dbal->addSelect('
-            COALESCE(
-                product_modification.barcode, 
-                product_variation.barcode, 
-                product_offer.barcode
-            ) AS barcode
-		');
+        /** Штрихкоды продукта */
+
+        $dbal->addSelect(
+            "
+            JSON_AGG(
+                DISTINCT
+                    COALESCE(
+                        product_modification_barcode.value,
+                        product_variation_barcode.value,
+                        product_offer_barcode.value,
+                        product_info.barcode
+                        )
+                   ) AS barcodes
+            "
+        );
+
 
         /* Фото продукта */
 

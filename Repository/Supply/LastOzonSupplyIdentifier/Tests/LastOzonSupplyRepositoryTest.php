@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ namespace BaksDev\Ozon\Package\Repository\Supply\LastOzonSupplyIdentifier\Tests;
 use BaksDev\Ozon\Package\Repository\Supply\LastOzonSupplyIdentifier\LastOzonSupplyInterface;
 use BaksDev\Ozon\Package\Repository\Supply\LastOzonSupplyIdentifier\LastOzonSupplyResult;
 use BaksDev\Ozon\Package\Type\Supply\Status\OzonSupplyStatus\Collection\OzonSupplyStatusCollection;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionClass;
 use ReflectionMethod;
@@ -55,7 +56,7 @@ class LastOzonSupplyRepositoryTest extends KernelTestCase
 
         /** @see .env.test */
         $LastOzonSupplyResult = $LastOzonSupplyInterface
-            ->forProfile($_SERVER['TEST_OZON_PROFILE'])
+            ->forProfile($_SERVER['TEST_OZON_PROFILE'] ?? new UserProfileUid(UserProfileUid::TEST))
             ->find();
 
         if(false === ($LastOzonSupplyResult instanceof LastOzonSupplyResult))
