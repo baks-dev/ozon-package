@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,20 @@ use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Ozon\Package\Entity\Package\Event\OzonPackageEvent;
 use BaksDev\Ozon\Package\Entity\Package\OzonPackage;
 use BaksDev\Ozon\Package\Messenger\Package\OzonPackageMessage;
+use BaksDev\Ozon\Package\Type\Supply\Status\OzonSupplyStatus\OzonSupplyStatusNew;
 
+/**
+ * Создает OzonPackage упаковку и добавляет связь с поставкой OzonSupply @see OzonSupplyStatusNew
+ *
+ * @note сообщение будет отправлено в транспорт по профилю - не работает в при messenger sync
+ */
 final class OzonPackageHandler extends AbstractHandler
 {
     public function handle(OzonPackageDTO $command): string|OzonPackage
     {
-        $this->setCommand($command);
-
-        $this->preEventPersistOrUpdate(OzonPackage::class, OzonPackageEvent::class);
+        $this
+            ->setCommand($command)
+            ->preEventPersistOrUpdate(OzonPackage::class, OzonPackageEvent::class);
 
         /** Валидация всех объектов */
         if($this->validatorCollection->isInvalid())

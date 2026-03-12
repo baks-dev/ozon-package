@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,6 @@ use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
 
-/** @see WbPackageOrderResult */
 final readonly class OrderInOzonPackageByIdResult
 {
     public function __construct(
@@ -59,7 +58,8 @@ final readonly class OrderInOzonPackageByIdResult
         private ?string $code_ext,
         private bool|null $code_cdn,
 
-        private string $posting_number,
+        private ?string $order_posting,
+        private ?string $posting_number,
     ) {}
 
     public function getPackage(): OzonPackageUid
@@ -150,9 +150,21 @@ final readonly class OrderInOzonPackageByIdResult
         return $this->code_cdn;
     }
 
-    /** @see OrderProductPosting */
-    public function getPostingNumber(): string
+    /**
+     * @deprecated
+     * @see OrderProductPosting
+     */
+    public function getPostingNumber(): ?string
     {
         return $this->posting_number;
     }
+
+    /**
+     * Уникальный номер отправления
+     */
+    public function getOrderPosting(): ?string
+    {
+        return $this->order_posting;
+    }
+
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Materials\Sign\BaksDevMaterialsSignBundle;
 use BaksDev\Materials\Sign\Entity\Code\MaterialSignCode;
 use BaksDev\Materials\Sign\Entity\Event\MaterialSignEvent;
+use BaksDev\Orders\Order\Entity\Event\Posting\OrderPosting;
 use BaksDev\Orders\Order\Entity\Invariable\OrderInvariable;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\Products\OrderProduct;
@@ -68,11 +69,14 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
         return $this;
     }
 
+    /**
+     * @return Generator<int, OrdersByOzonPackageResult>|false
+     */
     public function findAll(): Generator|false
     {
         if(false === ($this->event instanceof OzonPackageEventUid))
         {
-            throw new InvalidArgumentException('Invalid Argument OzonPackageEvent');
+            throw new InvalidArgumentException('Не передан обязательный параметр запроса event');
         }
 
         $dbal = $this->DBALQueryBuilder
@@ -80,7 +84,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
             ->bindLocal();
 
         $dbal
-            ->addSelect('ozon_package_order.status AS package_status')
+            ->select('ozon_package_order.status AS package_status')
             ->from(OzonPackageOrder::class, 'ozon_package_order');
 
         $dbal
@@ -90,6 +94,14 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 OzonPackageEvent::class,
                 'ozon_package_event',
                 'ozon_package_event.id = ozon_package_order.event'
+            );
+
+        $dbal
+            ->where('ozon_package_order.event = :event')
+            ->setParameter(
+                key: 'event',
+                value: $this->event,
+                type: OzonPackageEventUid::TYPE
             );
 
         $dbal
@@ -142,19 +154,32 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 OrderProduct::class,
                 'ord_product',
                 '
-                    ord_product.event = ord.event AND 
-                    ord_product.id = ozon_package_order.product'
+                    ord_product.event = ord.event'
             );
 
-        /** Отдельные отправления - должен быть хотя бы один элемент */
+        /**
+         * @deprecated
+         * Отдельные отправления
+         */
         $dbal
             ->addSelect('ord_product_posting.number AS order_product_posting')
-            ->join(
+            ->leftJoin(
                 'ord_product',
                 OrderProductPosting::class,
                 'ord_product_posting',
                 'ord_product_posting.product = ord_product.id'
             );
+
+        /** Отправления заказа */
+        $dbal
+            ->addSelect('orders_posting.value AS order_posting')
+            ->leftJoin(
+                'ord_product',
+                OrderPosting::class,
+                'orders_posting',
+                'orders_posting.event = ord.event'
+            );
+
 
         if(class_exists(BaksDevMaterialsSignBundle::class))
         {
@@ -188,21 +213,13 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 );
         }
 
-        $dbal
-            ->where('ozon_package_order.event = :event')
-            ->setParameter(
-                key: 'event',
-                value: $this->event,
-                type: OzonPackageEventUid::TYPE
-            );
-
         $dbal->enableCache('ozon-package');
 
         return $dbal->fetchAllHydrate(OrdersByOzonPackageResult::class);
     }
 
     /**
-     * @return array{int, OrdersByOzonPackageResult}|false
+     * @return array<int, OrdersByOzonPackageResult>|false
      */
     public function toArray(): array|false
     {

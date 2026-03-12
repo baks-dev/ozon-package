@@ -19,17 +19,17 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
 namespace BaksDev\Ozon\Package\Messenger\Supply;
 
-
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(priority: 0)]
-final class OzonSupplyNullDispatcher
+final readonly class OzonSupplyNullDispatcher
 {
     public function __invoke(OzonSupplyMessage $message): void {}
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,8 @@ use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
+use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
+use DateTimeImmutable;
 
 final readonly class OzonPackageOrdersByOzonSupplyResult
 {
@@ -47,6 +49,7 @@ final readonly class OzonPackageOrdersByOzonSupplyResult
         private string $status,
 
         private string $order_number,
+        private ?string $order_posting,
         private string $order_data,
 
         private string $ord_product_event,
@@ -74,6 +77,8 @@ final readonly class OzonPackageOrdersByOzonSupplyResult
         private string|null $product_image,
         private string|null $product_image_ext,
         private bool $product_image_cdn,
+
+        private string $product_stock_event,
     ) {}
 
     /** @see OzonPackageSupply */
@@ -106,10 +111,15 @@ final readonly class OzonPackageOrdersByOzonSupplyResult
         return $this->order_number;
     }
 
-    /** @see OrderEvent */
-    public function getOrderData(): string
+    public function getOrderPosting(): ?string
     {
-        return $this->order_data;
+        return $this->order_posting;
+    }
+
+    /** @see OrderEvent */
+    public function getOrderData(): DateTimeImmutable
+    {
+        return new DateTimeImmutable($this->order_data);
     }
 
     /** @see OrderProduct */
@@ -221,4 +231,10 @@ final readonly class OzonPackageOrdersByOzonSupplyResult
     {
         return $this->product_image_cdn;
     }
+
+    public function getProductStockId(): ?ProductStockEventUid
+    {
+        return $this->product_stock_event ? new ProductStockEventUid($this->product_stock_event) : null;
+    }
+
 }

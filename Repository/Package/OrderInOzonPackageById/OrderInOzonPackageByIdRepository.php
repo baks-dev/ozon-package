@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Materials\Sign\BaksDevMaterialsSignBundle;
 use BaksDev\Materials\Sign\Entity\Code\MaterialSignCode;
 use BaksDev\Materials\Sign\Entity\Event\MaterialSignEvent;
+use BaksDev\Orders\Order\Entity\Event\Posting\OrderPosting;
 use BaksDev\Orders\Order\Entity\Invariable\OrderInvariable;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\Products\OrderProduct;
@@ -64,10 +65,8 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
 
     /**
      * Метод получает информацию о заказе, продукте, упаковке, Честном знаке
-     *
-     * @return \Generator{int, OrderInOzonPackageByIdResult}|false
      */
-    public function findAll(): \Generator|false
+    public function find(): OrderInOzonPackageByIdResult|false
     {
 
         if(false === ($this->order instanceof OrderUid))
@@ -130,17 +129,30 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                 'ord',
                 OrderProduct::class,
                 'ord_product',
-                'ord_product.event = ord.event AND ord_product.id = package_order.product'
+                'ord_product.event = ord.event'
             );
 
-        /** Отдельные отправления - должен быть хотя бы один элемент */
+        /**
+         * @deprecated
+         * Отдельные отправления
+         */
         $dbal
             ->addSelect('ord_product_posting.number AS posting_number')
-            ->join(
+            ->leftJoin(
                 'ord_product',
                 OrderProductPosting::class,
                 'ord_product_posting',
                 'ord_product_posting.product = ord_product.id'
+            );
+
+        /** Отправления заказа */
+        $dbal
+            ->addSelect('orders_posting.value AS order_posting')
+            ->leftJoin(
+                'ord_product',
+                OrderPosting::class,
+                'orders_posting',
+                'orders_posting.event = ord.event'
             );
 
         if(class_exists(BaksDevMaterialsSignBundle::class))
@@ -178,8 +190,6 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
 
         $dbal->enableCache('ozon-package');
 
-        $result = $dbal->fetchAllHydrate(OrderInOzonPackageByIdResult::class);
-
-        return (true === $result->valid()) ? $result : false;
+        return $dbal->fetchHydrate(OrderInOzonPackageByIdResult::class);
     }
 }

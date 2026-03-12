@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,16 @@
 namespace BaksDev\Ozon\Package\Repository\Package\OrdersByOzonPackage\Tests;
 
 use BaksDev\Ozon\Package\Repository\Package\OrdersByOzonPackage\OrdersByOzonPackageInterface;
+use BaksDev\Ozon\Package\Repository\Package\OrdersByOzonPackage\OrdersByOzonPackageResult;
 use BaksDev\Ozon\Package\Type\Package\Event\OzonPackageEventUid;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionClass;
+use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-#[When(env: 'test')]
 #[Group('ozon-package')]
+#[When(env: 'test')]
 class OrdersByOzonPackageRepositoryRepositoryTest extends KernelTestCase
 {
     public function testUseCase(): void
@@ -41,8 +44,35 @@ class OrdersByOzonPackageRepositoryRepositoryTest extends KernelTestCase
         /** @var OrdersByOzonPackageInterface $OrdersByOzonPackageInterface */
         $OrdersByOzonPackageInterface = self::getContainer()->get(OrdersByOzonPackageInterface::class);
 
-        $results = $OrdersByOzonPackageInterface
-            ->byPackageEvent(new OzonPackageEventUid('0198768f-4e6c-74bb-ac32-8f4cd01c1563'))
-            ->toArray();
+        $result = $OrdersByOzonPackageInterface
+            ->byPackageEvent(new OzonPackageEventUid(OzonPackageEventUid::TEST))
+            ->findAll();
+
+        if(false === $result->valid())
+        {
+            self::assertTrue(true);
+            echo sprintf('%s результат репозитория не протестирован  %s %s', PHP_EOL, self::class, PHP_EOL);
+            return;
+        }
+
+        $current = $result->current();
+
+        // Вызываем все геттеры
+        $reflectionClass = new ReflectionClass(OrdersByOzonPackageResult::class);
+        $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
+
+        foreach($methods as $method)
+        {
+            // Методы без аргументов
+            if($method->getNumberOfParameters() === 0)
+            {
+                // Вызываем метод
+                $method->invoke($current);
+            }
+        }
+
+        self::assertTrue(true);
+
+
     }
 }

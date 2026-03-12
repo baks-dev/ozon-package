@@ -136,7 +136,8 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             'ord',
             OrderProduct::class,
             'ord_product',
-            'ord_product.event = ord.event AND ord_product.id = package_orders.product'
+            '
+                ord_product.event = ord.event'
         );
 
         $dbal
@@ -172,7 +173,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_offer.id as product_offer_uid')
             ->addSelect('product_offer.value as product_offer_value')
             ->addSelect('product_offer.postfix as product_offer_postfix')
-            //            ->addSelect('product_offer.barcode_old as product_offer_barcode')
+            ->addSelect('product_offer.barcode_old as product_offer_barcode')
             ->addSelect('product_offer.name as product_offer_detail_name')
             ->leftJoin(
                 'ord_product',
@@ -219,7 +220,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_variation.id as product_variation_uid')
             ->addSelect('product_variation.value as product_variation_value')
             ->addSelect('product_variation.postfix as product_variation_postfix')
-            //            ->addSelect('product_variation.postfix as product_variation_barcode')
+            ->addSelect('product_variation.postfix as product_variation_barcode')
             ->leftJoin(
                 'ord_product',
                 ProductVariation::class,
@@ -265,7 +266,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             ->addSelect('product_modification.id as product_modification_uid')
             ->addSelect('product_modification.value as product_modification_value')
             ->addSelect('product_modification.postfix as product_modification_postfix')
-            //            ->addSelect('product_modification.barcode_old as product_modification_barcode')
+            ->addSelect('product_modification.barcode_old as product_modification_barcode')
             ->leftJoin(
                 'ord_product',
                 ProductModification::class,
@@ -439,6 +440,11 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
         return true === $result->valid() ? $result : false;
     }
 
+    /**
+     * Метод получает список продукции, добавленной в поставку (заказы группируются)
+     *
+     * @return Generator<int, PrintOzonPackageOrdersResult>|false
+     */
     public function findAll(): Generator|false
     {
         if(false === ($this->supply instanceof OzonSupplyUid))
@@ -474,6 +480,11 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             );
 
         $dbal
+            ->where('ozon_package_supply.supply = :supply')
+            ->andWhere('ozon_package_supply.print = false')
+            ->setParameter('supply', $this->supply, OzonSupplyUid::TYPE);
+
+        $dbal
             ->join(
                 'ozon_package',
                 OzonPackageOrder::class,
@@ -502,8 +513,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             OrderProduct::class,
             'ord_product',
             '
-                ord_product.event = ord.event AND 
-                ord_product.id = ozon_package_order.product'
+                ord_product.event = ord.event'
         )
             ->addGroupBy('ozon_package_order.sort');
 
@@ -687,6 +697,15 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             "
         );
 
+        $dbal->addSelect('
+            COALESCE(
+                product_modification.barcode_old, 
+                product_variation.barcode_old, 
+                product_offer.barcode_old,
+                product_info.barcode
+            ) AS barcode
+		');
+
 
         /* Фото продукта */
 
@@ -774,11 +793,6 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 product_info.article
             ) AS product_article
 		');
-
-        $dbal
-            ->where('ozon_package_supply.supply = :supply')
-            ->andWhere('ozon_package_supply.print = false')
-            ->setParameter('supply', $this->supply, OzonSupplyUid::TYPE);
 
         $dbal->addOrderBy('ozon_package_order.sort');
         $dbal->allGroupByExclude();

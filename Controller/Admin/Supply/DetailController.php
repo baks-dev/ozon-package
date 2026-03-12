@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -58,23 +58,19 @@ final class DetailController extends AbstractController
     ): Response
     {
         // Поиск
-        $search = new SearchDTO();
-
         $searchForm = $this
             ->createForm(
                 type: SearchForm::class,
-                data: $search,
+                data: $search = new SearchDTO(),
                 options: ['action' => $this->generateUrl('ozon-package:admin.supply.detail', ['id' => $ozonSupply->getId()])]
             )
             ->handleRequest($request);
 
         // Фильтр
-        $filter = new ProductFilterDTO();
-
         $filterForm = $this
             ->createForm(
                 type: ProductFilterForm::class,
-                data: $filter,
+                data: $filter = new ProductFilterDTO(),
                 options: ['action' => $this->generateUrl('ozon-package:admin.supply.detail', ['id' => $ozonSupply->getId()])]
             )
             ->handleRequest($request);
