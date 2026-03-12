@@ -30,7 +30,7 @@ use BaksDev\Ozon\Package\Entity\Package\Event\Supply\OzonPackageSupplyInterface;
 use BaksDev\Ozon\Package\Type\Package\Id\OzonPackageUid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** @see PrintOzonPackageHandler */
+/** @see PrintOzonPackageDispatcher */
 final class PrintOzonPackageMessage implements OzonPackageSupplyInterface
 {
     /**

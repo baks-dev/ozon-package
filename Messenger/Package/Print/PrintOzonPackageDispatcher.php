@@ -28,10 +28,12 @@ namespace BaksDev\Ozon\Package\Messenger\Package\Print;
 
 use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Ozon\Package\Entity\Package\Event\Supply\OzonPackageSupply;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 0)]
-final class PrintOzonPackageHandler extends AbstractHandler
+final class PrintOzonPackageDispatcher extends AbstractHandler
 {
     public function __invoke(PrintOzonPackageMessage $command): void
     {
