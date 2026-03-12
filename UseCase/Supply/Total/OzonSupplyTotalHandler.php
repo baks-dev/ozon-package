@@ -29,7 +29,7 @@ use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Ozon\Package\Entity\Supply\Event\Invariable\OzonSupplyInvariable;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-#[Autoconfigure(public: true)]
+// #[Autoconfigure(public: true)]
 final class OzonSupplyTotalHandler extends AbstractHandler
 {
     public function handle(OzonSupplyInvariableDTO $command): string|OzonSupplyInvariable

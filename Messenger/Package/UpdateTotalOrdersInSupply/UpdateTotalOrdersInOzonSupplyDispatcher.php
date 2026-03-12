@@ -37,7 +37,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Метод пересчитывает общее количество заказов в поставке OzonSupply
  */
-#[Autoconfigure(public: true)]
+// #[Autoconfigure(public: true)]
 #[AsMessageHandler(priority: 0)]
 final readonly class UpdateTotalOrdersInOzonSupplyDispatcher
 {

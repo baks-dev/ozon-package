@@ -29,7 +29,7 @@ use BaksDev\Ozon\Package\Type\Package\Event\OzonPackageEventUid;
 use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-#[Autoconfigure(public: true)]
+// #[Autoconfigure(public: true)]
 interface OzonSupplyByOzonPackageInterface
 {
     public function forPackageEvent(OzonPackageEvent|OzonPackageEventUid|string $event): self;
