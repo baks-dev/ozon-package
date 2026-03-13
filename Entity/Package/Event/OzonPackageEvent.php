@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ use BaksDev\Ozon\Package\Entity\Package\Event\Supply\OzonPackageSupply;
 use BaksDev\Ozon\Package\Entity\Package\OzonPackage;
 use BaksDev\Ozon\Package\Type\Package\Event\OzonPackageEventUid;
 use BaksDev\Ozon\Package\Type\Package\Id\OzonPackageUid;
+use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -142,5 +143,18 @@ class OzonPackageEvent extends EntityEvent
     public function setMain(OzonPackageUid|OzonPackage $main): void
     {
         $this->main = $main instanceof OzonPackage ? $main->getId() : $main;
+    }
+
+    /**
+     * @return Collection<int, OzonPackageOrder>|Collection<empty>
+     */
+    public function getOrd(): Collection
+    {
+        return $this->ord;
+    }
+
+    public function getSupplyId(): OzonSupplyUid
+    {
+        return $this->supply->getSupply();
     }
 }

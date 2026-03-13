@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
 use BaksDev\Orders\Order\Entity\Event\OrderEvent;
+use BaksDev\Orders\Order\Entity\Event\Posting\OrderPosting;
 use BaksDev\Orders\Order\Entity\Invariable\OrderInvariable;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\Products\OrderProduct;
@@ -53,6 +54,9 @@ use BaksDev\Products\Product\Entity\Offers\Variation\ProductVariation;
 use BaksDev\Products\Product\Entity\Photo\ProductPhoto;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterDTO;
+use BaksDev\Products\Stocks\Entity\Stock\Invariable\ProductStocksInvariable;
+use BaksDev\Products\Stocks\Entity\Stock\Orders\ProductStockOrder;
+use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
 
 final class OzonPackageOrdersByOzonSupplyRepository implements OzonPackageOrdersByOzonSupplyInterface
 {
@@ -95,7 +99,7 @@ final class OzonPackageOrdersByOzonSupplyRepository implements OzonPackageOrders
     }
 
     /**
-     * Метод возвращает пагинатор OzonSupply
+     * Метод возвращает пагинатор с заказами, добавленными в OzonSupply
      */
     public function findAll(): PaginatorInterface
     {
@@ -118,8 +122,6 @@ final class OzonPackageOrdersByOzonSupplyRepository implements OzonPackageOrders
             );
 
         $dbal
-            ->addSelect('supply_order.id as order_id')
-            ->addSelect('supply_order.product as product_id')
             ->addSelect('supply_order.status')
             ->join(
                 'supply',
@@ -132,7 +134,9 @@ final class OzonPackageOrdersByOzonSupplyRepository implements OzonPackageOrders
          * Системный заказ
          */
 
-        $dbal->leftJoin(
+        $dbal
+            ->addSelect('orders.id as order_id')
+            ->join(
             'supply_order',
             Order::class,
             'orders',
@@ -157,17 +161,47 @@ final class OzonPackageOrdersByOzonSupplyRepository implements OzonPackageOrders
                 'event.id = orders.event'
             );
 
+        /** Отправления заказа */
         $dbal
+            ->addSelect('orders_posting.value AS order_posting')
+            ->leftJoin(
+                'orders',
+                OrderPosting::class,
+                'orders_posting',
+                'orders_posting.event = orders.event'
+            );
+
+        $dbal
+            ->addSelect('order_product.id as product_id')
             ->addSelect('order_product.product AS ord_product_event')
             ->addSelect('order_product.offer AS ord_product_offer')
             ->addSelect('order_product.variation AS ord_product_variation')
             ->addSelect('order_product.modification AS ord_product_modification')
-            ->join('orders',
+            ->leftJoin('orders',
                 OrderProduct::class,
                 'order_product',
-                '
-                    order_product.event = orders.event AND 
-                    order_product.id = supply_order.product'
+                'order_product.event = orders.event'
+            );
+
+        /**
+         * Складская заявка
+         */
+
+        $dbal
+            ->join(
+                'orders',
+                ProductStockOrder::class,
+                'product_stock_order',
+                'product_stock_order.ord = orders.id',
+            );
+
+        $dbal
+            ->addSelect('product_stock.event as product_stock_event')
+            ->join(
+                'product_stock_order',
+                ProductStock::class,
+                'product_stock',
+                'product_stock.event = product_stock_order.event',
             );
 
         /**

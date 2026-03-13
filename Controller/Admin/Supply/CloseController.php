@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -55,14 +55,14 @@ final class CloseController extends AbstractController
         OzonSupplyCloseHandler $ozonSupplyCloseHandler,
     ): Response
     {
-        /** Получаем активное событие системной поставки */
+        /** Получаем активное событие поставки Ozon */
         $ozonSupplyEvent = $ozonSupplyCurrentEventRepository
             ->forSupply($ozonSupply)
             ->find();
 
         if(false === $ozonSupplyEvent)
         {
-            throw new RouteNotFoundException('активное событие системной поставки не найдено');
+            throw new RouteNotFoundException('активное событие поставки Ozon не найдено');
         }
 
         $ozonSupplyCloseDTO = new OzonSupplyCloseDTO();

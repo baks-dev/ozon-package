@@ -22,17 +22,18 @@
  *
  */
 
-namespace BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById;
+namespace BaksDev\Ozon\Package\Repository\Package\CurrentOzonPackage;
 
-use BaksDev\Orders\Order\Entity\Order;
-use BaksDev\Orders\Order\Type\Id\OrderUid;
+use BaksDev\Ozon\Package\Entity\Package\Event\OzonPackageEvent;
+use BaksDev\Ozon\Package\Entity\Package\OzonPackage;
+use BaksDev\Ozon\Package\Type\Package\Id\OzonPackageUid;
 
-interface OrderInOzonPackageByIdInterface
+interface CurrentOzonPackageInterface
 {
-    public function forOrder(Order|OrderUid|string $order): self;
+    public function forPackage(OzonPackage|OzonPackageUid $package): self;
 
     /**
-     * Метод получает информацию о заказе, продукте, упаковке, Честном знаке
+     * Текущее событие OzonPackage
      */
-    public function find(): OrderInOzonPackageByIdResult|false;
+    public function find(): OzonPackageEvent|false;
 }

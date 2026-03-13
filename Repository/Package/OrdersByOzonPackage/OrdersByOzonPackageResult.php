@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -60,7 +60,8 @@ final readonly class OrdersByOzonPackageResult
         private ?bool $code_cdn = null,
         private ?string $code_string = null,
 
-        private string $order_product_posting,
+        private ?string $order_posting,
+        private ?string $order_product_posting,
     ) {}
 
     /** Статус упаковки @see OzonPackageOrder */
@@ -89,8 +90,19 @@ final readonly class OrdersByOzonPackageResult
         return new OrderUid($this->order);
     }
 
-    /** Идентификатор поставки на Озон @see OrderProductPosting */
-    public function getPostingNumber(): string
+    /**
+     * Уникальный номер отправления
+     */
+    public function getOrderPosting(): ?string
+    {
+        return $this->order_posting;
+    }
+
+    /**
+     * @deprecated
+     * Идентификатор поставки на Озон @see OrderProductPosting
+     */
+    public function getPostingNumber(): ?string
     {
         return $this->order_product_posting;
     }

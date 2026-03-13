@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,9 @@ use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Core\Type\UidType\ParamConverter;
 use BaksDev\Orders\Order\Type\Id\OrderUid;
 use BaksDev\Ozon\Orders\Messenger\ProcessOzonPackageStickers\ProcessOzonPackageStickersMessage;
+use BaksDev\Ozon\Package\Messenger\Package\Print\PrintOzonPackageMessage;
 use BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById\OrderInOzonPackageByIdInterface;
+use BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById\OrderInOzonPackageByIdResult;
 use BaksDev\Ozon\Products\Repository\Barcode\OzonBarcodeSettings\OzonBarcodeSettingsInterface;
 use BaksDev\Ozon\Products\Repository\Barcode\OzonBarcodeSettings\OzonBarcodeSettingsResult;
 use BaksDev\Ozon\Type\Id\OzonTokenUid;
@@ -61,8 +63,8 @@ final class PrintOrderController extends AbstractController
     /** Продукты в упаковке */
     private ?array $products = null;
 
-    /** Настройки штих-кода для Ozon */
-    private OzonBarcodeSettingsResult|null $settings = null;
+    /** Настройки штихкода для Ozon */
+    private OzonBarcodeSettingsResult|null|false $settings = null;
 
     /** Упаковки */
     private ?array $packages = null;
@@ -74,7 +76,7 @@ final class PrintOrderController extends AbstractController
     private ?array $stickers = null;
 
     /**
-     * Печать штрихкодов, Честных знаков и стикеров для ЗАКАЗОВ
+     * Печать штрихкодов, Честных знаков и стикеров для ЗАКАЗОВ в поставке
      */
     #[Route('/admin/ozon/packages/print/order/{id}', name: 'admin.package.print.order', methods: ['GET', 'POST'])]
     public function printer(
@@ -92,12 +94,14 @@ final class PrintOrderController extends AbstractController
 
         /**
          * Получаем заказы в упаковке
+         * @note один заказ - один продукт
          */
-        $ozonPackageOrderResults = $OzonPackageOrderRepository
+        $OzonPackageOrderResult = $OzonPackageOrderRepository
             ->forOrder($OrderUid)
-            ->findAll();
+            ->find();
 
-        if(false === $ozonPackageOrderResults)
+
+        if(false === $OzonPackageOrderResult instanceof OrderInOzonPackageByIdResult)
         {
             $Logger->critical(
                 'ozon-package: Не найдены заказы в упаковке',
@@ -110,121 +114,66 @@ final class PrintOrderController extends AbstractController
             return new Response('Заказов Ozon в упаковке не найдено', Response::HTTP_NOT_FOUND);
         }
 
-        foreach($ozonPackageOrderResults as $ozonPackageOrderResult)
+        $isPrint = true;
+
+        /** Идентификатор упаковки OzonPackage */
+        $ozonPackageUid = (string) $OzonPackageOrderResult->getPackage();
+        $this->packages[] = $ozonPackageUid;
+
+        /** Номер заказа - всегда один */
+        $this->order = $OzonPackageOrderResult->getOrderPosting();
+
+        /**
+         * Получаем стикеры Ozon
+         */
+        $key = $OzonPackageOrderResult->getOrderPosting();
+        $ozonSticker = $cache->getItem($key)->get();
+
+
+        /**
+         * Если стикер не получен:
+         * - пробуем получить заново
+         * - если не удалось получить - не распечатываем всю упаковку
+         */
+        if(null === $ozonSticker)
         {
-            /** Идентификатор упаковки OzonPackage */
-            $ozonPackageUid = (string) $ozonPackageOrderResult->getPackage();
-            $this->packages[] = $ozonPackageUid;
+            $message = new ProcessOzonPackageStickersMessage(
+                new OzonTokenUid($OzonPackageOrderResult->getOrdToken()),
+                $OzonPackageOrderResult->getOrderPosting(),
+            );
 
-            /** Номер заказа - всегда один */
-            $this->order = $ozonPackageOrderResult->getOrdNumber();
+            /** @see ProcessOzonPackageStickersDispatcher */
+            $MessageDispatch->dispatch(message: $message);
 
-            /**
-             * Получаем стикеры Ozon
-             */
-
-            $key = $ozonPackageOrderResult->getPostingNumber();
             $ozonSticker = $cache->getItem($key)->get();
 
-            /**
-             * Если стикер не получен:
-             * - пробуем получить заново
-             * - если не удалось получить - не распечатываем всю упаковку
-             */
-            if(null === $ozonSticker)
-            {
-                $message = new ProcessOzonPackageStickersMessage(
-                    new OzonTokenUid($ozonPackageOrderResult->getOrdToken()),
-                    $ozonPackageOrderResult->getPostingNumber(),
-                );
-
-                /** @see ProcessOzonPackageStickersDispatcher */
-                $MessageDispatch->dispatch(message: $message);
-
-                $ozonSticker = $cache->getItem($key)->get();
-
-                if(null !== $ozonSticker)
-                {
-                    $this->stickers[$ozonPackageUid] = $ozonSticker;
-                }
-            }
-            else
+            if(null !== $ozonSticker)
             {
                 $this->stickers[$ozonPackageUid] = $ozonSticker;
             }
-
-            /**
-             * Генерируем Честный знак
-             */
-
-            if(true === $ozonPackageOrderResult->isExistCode())
+            else
             {
-                $datamatrix = $BarcodeWrite
-                    ->text($ozonPackageOrderResult->getCode())
-                    ->type(BarcodeType::DataMatrix)
-                    ->format(BarcodeFormat::SVG)
-                    ->generate();
-
-                if($datamatrix === false)
-                {
-                    $Logger->critical(
-                        'ozon-package: Проверить права на исполнение:  ',
-                        [
-                            self::class.':'.__LINE__,
-                            'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
-                            'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
-                        ]
-                    );
-
-                    throw new RuntimeException('Datamatrix write error');
-                }
-
-                /** Генерируем «Честный знак» в формате SVG */
-                $render = $BarcodeWrite->render();
-                $BarcodeWrite->remove();
-                $render = strip_tags($render, ['path']);
-                $render = trim($render);
-
-                $this->matrix[$ozonPackageUid] = $render;
+                $isPrint = false;
             }
+        }
+        else
+        {
+            $this->stickers[$ozonPackageUid] = $ozonSticker;
+        }
 
-            /**
-             * Получаем информацию о продукте
-             */
-            $product = $productDetailRepository
-                ->event($ozonPackageOrderResult->getOrdProduct())
-                ->offer($ozonPackageOrderResult->getOrdOffer())
-                ->variation($ozonPackageOrderResult->getOrdVariation())
-                ->modification($ozonPackageOrderResult->getOrdModification())
-                ->findResult();
+        /**
+         * Генерируем Честный знак
+         */
 
-            if(false === $product)
-            {
-                $Logger->critical(
-                    'ozon-package: Продукция в упаковке не найдена',
-                    [self::class.':'.__LINE__]
-                );
-
-                return new Response('Продукция в упаковке не найдена', Response::HTTP_NOT_FOUND);
-            }
-
-            $this->products[$ozonPackageUid] = $product;
-
-            /**
-             * Получаем настройки для штрих-кода Ozon
-             */
-            $this->settings = $product->getProductMain() ? $barcodeSettingsRepository
-                ->forProduct($product->getProductMain())
-                ->find() : false;
-
-            /** Генерируем штрихкод в формате SVG */
-            $barcode = $BarcodeWrite
-                ->text($product->getProductBarcode())
-                ->type(BarcodeType::Code128)
+        if(true === $OzonPackageOrderResult->isExistCode())
+        {
+            $datamatrix = $BarcodeWrite
+                ->text($OzonPackageOrderResult->getCode())
+                ->type(BarcodeType::DataMatrix)
                 ->format(BarcodeFormat::SVG)
                 ->generate();
 
-            if($barcode === false)
+            if($datamatrix === false)
             {
                 $Logger->critical(
                     'ozon-package: Проверить права на исполнение:  ',
@@ -235,29 +184,105 @@ final class PrintOrderController extends AbstractController
                     ]
                 );
 
-                throw new RuntimeException('Barcode write error');
+                throw new RuntimeException('Datamatrix write error');
             }
 
+            /** Генерируем «Честный знак» в формате SVG */
             $render = $BarcodeWrite->render();
             $BarcodeWrite->remove();
             $render = strip_tags($render, ['path']);
             $render = trim($render);
 
-            $this->barcodes[$ozonPackageUid] = trim($render);
+            $this->matrix[$ozonPackageUid] = $render;
         }
 
-        return $this->render(
-            [
-                'matrix' => $this->matrix,
-                'barcodes' => $this->barcodes,
-                'products' => $this->products,
-                'packages' => $this->packages,
-                'settings' => $this->settings,
-                'order' => $this->order,
-                'stickers' => $this->stickers,
-            ],
-            'admin.package',
-            '/print/order.html.twig'
+        /**
+         * Получаем информацию о продукте
+         */
+
+        $product = $productDetailRepository
+            ->event($OzonPackageOrderResult->getOrdProduct())
+            ->offer($OzonPackageOrderResult->getOrdOffer())
+            ->variation($OzonPackageOrderResult->getOrdVariation())
+            ->modification($OzonPackageOrderResult->getOrdModification())
+            ->findResult();
+
+        if(false === $product)
+        {
+            $Logger->critical(
+                'ozon-package: Продукция в упаковке не найдена',
+                [self::class.':'.__LINE__]
+            );
+
+            return new Response('Продукция в упаковке не найдена', Response::HTTP_NOT_FOUND);
+        }
+
+        $this->products[$ozonPackageUid] = $product;
+
+
+        /**
+         * Получаем настройки для штрих-кода Ozon
+         */
+        $this->settings = $product->getProductMain() ? $barcodeSettingsRepository
+            ->forProduct($product->getProductMain())
+            ->find() : false;
+
+        /** Генерируем штрихкод в формате SVG */
+        $barcode = $BarcodeWrite
+            ->text($product->getProductBarcode())
+            ->type(BarcodeType::Code128)
+            ->format(BarcodeFormat::SVG)
+            ->generate();
+
+        if($barcode === false)
+        {
+            $Logger->critical(
+                'ozon-package: Проверить права на исполнение:  ',
+                [
+                    self::class.':'.__LINE__,
+                    'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
+                    'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
+                ]
+            );
+
+            throw new RuntimeException('Barcode write error');
+        }
+
+        $render = $BarcodeWrite->render();
+        $BarcodeWrite->remove();
+        $render = strip_tags($render, ['path']);
+        $render = trim($render);
+
+        $this->barcodes[$ozonPackageUid] = trim($render);
+
+        $forRender = [
+            'matrix' => $this->matrix,
+            'barcodes' => $this->barcodes,
+            'products' => $this->products,
+            'packages' => $this->packages,
+            'settings' => $this->settings,
+            'order' => $this->order,
+            'stickers' => $this->stickers,
+        ];
+
+        /**
+         * Обязательно рендерим перед отправкой на печать
+         */
+        $render = $this->render(
+            $forRender,
+            dir: 'admin.package',
+            file: '/print/order.html.twig'
         );
+
+        if(true === $isPrint)
+        {
+            /** Отправляем сообщение в шину и отмечаем принт упаковки */
+            $MessageDispatch->dispatch(
+                message: new PrintOzonPackageMessage($OzonPackageOrderResult->getPackage()),
+                transport: 'ozon-package',
+            );
+        }
+
+        return $render;
     }
 }

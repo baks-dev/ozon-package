@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -105,7 +105,7 @@ final class PrintSupplyController extends AbstractController
 
         if(false === $ozonPackages)
         {
-            return new Response('Package not found', Response::HTTP_NOT_FOUND);
+            return new Response('НЕ РАСПЕЧАТАННЫЕ упаковки в поставке не найдены', Response::HTTP_NOT_FOUND);
         }
 
         $printers = null;
@@ -132,13 +132,13 @@ final class PrintSupplyController extends AbstractController
                 $OrderUid = (string) $order->getOrderId();
 
                 /** Составной ключ, так как по одному заказу может быть несколько продуктов  */
-                $this->orders[$OzonPackageUid][$order->getOrderNumber().':'.$order->getPostingNumber()] = $OrderUid;
+                $this->orders[$OzonPackageUid][$order->getOrderNumber().':'.$order->getOrderPosting()] = $OrderUid;
 
                 /**
                  * Получаем стикеры OZON
                  */
 
-                $key = $order->getPostingNumber();
+                $key = $order->getOrderPosting();
                 $ozonSticker = $cache->getItem($key)->get();
 
                 /**
@@ -150,7 +150,7 @@ final class PrintSupplyController extends AbstractController
                 {
                     $message = new ProcessOzonPackageStickersMessage(
                         new OzonTokenUid($order->getOrderToken()),
-                        $order->getPostingNumber(),
+                        $order->getOrderPosting(),
                     );
 
                     /** @see ProcessOzonPackageStickersDispatcher */
@@ -160,7 +160,7 @@ final class PrintSupplyController extends AbstractController
 
                     if(null !== $ozonSticker)
                     {
-                        $this->stickers[$order->getPostingNumber()] = $ozonSticker;
+                        $this->stickers[$order->getOrderPosting()] = $ozonSticker;
                     }
                     else
                     {
@@ -169,7 +169,7 @@ final class PrintSupplyController extends AbstractController
                 }
                 else
                 {
-                    $this->stickers[$order->getPostingNumber()] = $ozonSticker;
+                    $this->stickers[$order->getOrderPosting()] = $ozonSticker;
                 }
 
                 /**
@@ -286,23 +286,28 @@ final class PrintSupplyController extends AbstractController
             $printers[$OzonPackageUid] = $isPrint;
         }
 
+        $forRender = [
+            'packages' => $this->packages,
+            'orders' => $this->orders,
+            'stickers' => $this->stickers,
+            'matrix' => $this->matrix,
+            'barcodes' => $this->barcodes,
+            'settings' => $this->settings,
+            'products' => $this->products,
+        ];
+
+        /**
+         * Обязательно рендерим перед отправкой на печать
+         */
         $render = $this->render(
-            [
-                'packages' => $this->packages,
-                'orders' => $this->orders,
-                'stickers' => $this->stickers,
-                'matrix' => $this->matrix,
-                'barcodes' => $this->barcodes,
-                'settings' => $this->settings,
-                'products' => $this->products,
-            ],
-            'admin.package',
-            '/print/print.html.twig'
+            $forRender,
+            dir: 'admin.package',
+            file: '/print/print.html.twig'
         );
 
         /**
          * Отправляем сообщение в шину и отмечаем принт всех упаковок
-         * @var array{string, bool} $printers
+         * @var array<string, bool> $printers
          */
         if(null !== $printers)
         {

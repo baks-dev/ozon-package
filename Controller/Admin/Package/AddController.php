@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -87,11 +87,11 @@ final class AddController extends AbstractController
     ): Response
     {
         /** Продукты из производственной партии */
-        $manufacturePartProducts = new AddOrdersPackageDTO($this->getProfileUid());
+        $AddOrdersPackageDTO = new AddOrdersPackageDTO($this->getProfileUid());
 
         if($Request->isMethod('GET'))
         {
-            $manufacturePartProducts
+            $AddOrdersPackageDTO
                 ->setProduct($product)
                 ->setOffer($offer)
                 ->setVariation($variation)
@@ -102,7 +102,7 @@ final class AddController extends AbstractController
         // Форма
         $form = $this->createForm(
             type: AddOrdersPackageForm::class,
-            data: $manufacturePartProducts,
+            data: $AddOrdersPackageDTO,
             options: ['action' => $this->generateUrl('ozon-package:admin.package.add'),]
         );
 
@@ -113,10 +113,10 @@ final class AddController extends AbstractController
          * @var ProductDetailByEventResult|false $productDetail
          */
         $productDetail = $productDetailByUidRepository
-            ->event($manufacturePartProducts->getProduct())
-            ->offer($manufacturePartProducts->getOffer())
-            ->variation($manufacturePartProducts->getVariation())
-            ->modification($manufacturePartProducts->getModification())
+            ->event($AddOrdersPackageDTO->getProduct())
+            ->offer($AddOrdersPackageDTO->getOffer())
+            ->variation($AddOrdersPackageDTO->getVariation())
+            ->modification($AddOrdersPackageDTO->getModification())
             ->findResult();
 
         if(false === $productDetail)
@@ -125,7 +125,7 @@ final class AddController extends AbstractController
                 'ozon-package: Информация о продукте не найдена',
                 [
                     self::class.':'.__LINE__,
-                    var_export($manufacturePartProducts, true)
+                    var_export($AddOrdersPackageDTO, true)
                 ]
             );
 
@@ -138,7 +138,7 @@ final class AddController extends AbstractController
 
             /** Скрываем у всех продукт */
             $CentrifugoPublish
-                ->addData(['identifier' => $manufacturePartProducts->getIdentifier()]) // ID продукта
+                ->addData(['identifier' => $AddOrdersPackageDTO->getIdentifier()]) // ID продукта
                 ->send('remove');
 
             /** Идентификатор НОВОЙ поставки по профилю */
@@ -148,7 +148,14 @@ final class AddController extends AbstractController
 
             if(false === $OzonSupplyUid)
             {
-                return $this->errorController('Supply');
+                $this->addFlash
+                (
+                    'page.add',
+                    'danger.add',
+                    'ozon-package.package',
+                );
+
+                return $this->redirectToRoute('ozon-package:admin.package.index');
             }
 
             /** Создаем упаковку */
@@ -159,19 +166,20 @@ final class AddController extends AbstractController
              * Перебираем все количество произведенной продукции
              */
 
-            $total = (int) $manufacturePartProducts->getTotal();
+            $total = (int) $AddOrdersPackageDTO->getTotal();
 
-            for($i = 1; $i <= $total;)
+            for($i = 1; $i <= $total; $i++)
             {
+
                 /**
                  * Получаем заказ со статусом «УПАКОВКА» на данную продукцию
                  * @var $OrderEvent OrderEvent|false
                  */
                 $OrderEvent = $relevantNewOrderByProductRepository
-                    ->forProductEvent($manufacturePartProducts->getProduct())
-                    ->forOffer($manufacturePartProducts->getOffer())
-                    ->forVariation($manufacturePartProducts->getVariation())
-                    ->forModification($manufacturePartProducts->getModification())
+                    ->forProductEvent($AddOrdersPackageDTO->getProduct())
+                    ->forOffer($AddOrdersPackageDTO->getOffer())
+                    ->forVariation($AddOrdersPackageDTO->getVariation())
+                    ->forModification($AddOrdersPackageDTO->getModification())
                     ->forDelivery(TypeDeliveryFbsOzon::TYPE)
                     ->onlyPackageStatus() // статус «УПАКОВКА»
                     ->find();
@@ -188,40 +196,46 @@ final class AddController extends AbstractController
                     return $this->redirectToReferer();
                 }
 
-                /** Находим текущий продукт в заказе */
+                /**
+                 * Находим текущий продукт в заказе
+                 * @note при производстве - в заказе один продукт
+                 */
                 $orderProduct = $OrderEvent->getProduct()
-                    ->findFirst(function($k, OrderProduct $orderProduct) use ($manufacturePartProducts) {
+                    ->findFirst(function($k, OrderProduct $orderProduct) use ($AddOrdersPackageDTO) {
 
                         return
-                            $orderProduct->getProduct()->equals($manufacturePartProducts->getProduct())
-                            && ((is_null($orderProduct->getOffer()) === true && is_null($manufacturePartProducts->getOffer()) === true) || $orderProduct->getOffer()?->equals($manufacturePartProducts->getOffer()))
-                            && ((is_null($orderProduct->getVariation()) === true && is_null($manufacturePartProducts->getVariation()) === true) || $orderProduct->getVariation()?->equals($manufacturePartProducts->getVariation()))
-                            && ((is_null($orderProduct->getModification()) === true && is_null($manufacturePartProducts->getModification()) === true) || $orderProduct->getModification()?->equals($manufacturePartProducts->getModification()));
+                            $orderProduct->getProduct()->equals($AddOrdersPackageDTO->getProduct())
+                            && ((is_null($orderProduct->getOffer()) === true && is_null($AddOrdersPackageDTO->getOffer()) === true) || $orderProduct->getOffer()?->equals($AddOrdersPackageDTO->getOffer()))
+                            && ((is_null($orderProduct->getVariation()) === true && is_null($AddOrdersPackageDTO->getVariation()) === true) || $orderProduct->getVariation()?->equals($AddOrdersPackageDTO->getVariation()))
+                            && ((is_null($orderProduct->getModification()) === true && is_null($AddOrdersPackageDTO->getModification()) === true) || $orderProduct->getModification()?->equals($AddOrdersPackageDTO->getModification()));
                     });
 
                 if(null === $orderProduct)
                 {
                     $this->addFlash(
                         'page.add',
-                        'Заказ № %s: не найдено соответствия с продуктом в заказе',
+                        'Не найдено соответствия продукта из упаковки Ozon с продуктом в заказе',
                         'ozon-package.package',
-                        $OrderEvent->getOrderNumber(),
                     );
 
                     return $this->redirectToReferer();
                 }
 
-                /** Не добавляем, если заказ уже имеется в упаковке */
-                if(
-                    true === $existOrderInOzonPackageRepository
-                        ->forOrder($OrderEvent->getMain())
-                        ->forOrderProduct($orderProduct->getId())
-                        ->isExist()
-                )
+                /**
+                 * Если продукт из заказа уже имеется в упаковке - пропускаем продукт
+                 */
+                $existInPackage = $existOrderInOzonPackageRepository
+                    ->forOrder($OrderEvent->getMain())
+                    ->isExist();
+
+                if(true === $existInPackage)
                 {
                     continue;
                 }
 
+                /**
+                 * @note при производстве - в заказе один продукт
+                 */
                 foreach($OrderEvent->getProduct() as $product)
                 {
                     /** Добавляем заказ в упаковку  */
@@ -232,60 +246,14 @@ final class AddController extends AbstractController
 
                     $OzonPackageDTO->addOrd($OzonPackageOrderDTO);
                 }
-
-                $i += $orderProduct->getTotal();
-            }
-
-            /**
-             * Получаем складскую заявку и обновляем статус квитанции на «Готов к выдаче»
-             */
-
-            $invoices = $productStocksByOrderRepository
-                ->onOrder($OrderEvent->getMain())
-                ->findAll();
-
-            if(false === $invoices)
-            {
-                $this->addFlash(
-                    'page.add',
-                    'Заказ № %s: Не найдено ни одной складской заявки',
-                    'ozon-package.package',
-                    $OrderEvent->getOrderNumber()
-                );
-
-                return $this->redirectToReferer();
-            }
-
-            /**
-             * @var ProductStockEvent $ProductStockEvent
-             * Изменяем статус складской заявки «Готов к выдаче»
-             */
-            foreach($invoices as $ProductStockEvent)
-            {
-                $ExtraditionProductStockDTO = new ExtraditionProductStockDTO();
-                $ProductStockEvent->getDto($ExtraditionProductStockDTO);
-                $ProductStock = $ExtraditionProductStockHandler->handle($ExtraditionProductStockDTO);
-
-                if(false === ($ProductStock instanceof ProductStock))
-                {
-                    $this->addFlash(
-                        'page.add',
-                        'Ошибка при изменении статуса складской заявки на «Готов к выдаче»',
-                        'ozon-package.package',
-                        $ProductStock
-                    );
-
-                    return $this->redirectToReferer();
-                }
             }
 
             if(true === $OzonPackageDTO->getOrd()->isEmpty())
             {
                 $this->addFlash(
                     'page.add',
-                    'Заказ № %s: Не найдено ни одного заказа для добавления в упаковку',
+                    'Не найдено ни одного заказа для добавления в упаковку',
                     'ozon-package.package',
-                    $OrderEvent->getOrderNumber()
                 );
 
                 return $this->redirectToReferer();
@@ -309,18 +277,5 @@ final class AddController extends AbstractController
             'form' => $form->createView(),
             'card' => $productDetail
         ]);
-    }
-
-    public function errorController($code): Response
-    {
-        $this->addFlash
-        (
-            'page.add',
-            'danger.add',
-            'ozon-package.package',
-            $code
-        );
-
-        return $this->redirectToRoute('ozon-package:admin.package.index');
     }
 }

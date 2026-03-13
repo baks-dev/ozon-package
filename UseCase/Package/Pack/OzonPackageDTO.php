@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ use BaksDev\Ozon\Package\Entity\Supply\OzonSupply;
 use BaksDev\Ozon\Package\Type\Package\Event\OzonPackageEventUid;
 use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
 use BaksDev\Ozon\Package\UseCase\Package\Pack\Orders\OzonPackageOrderDTO;
+use BaksDev\Ozon\Package\UseCase\Package\Pack\Supply\OzonPackageSupplyDTO;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -50,7 +51,7 @@ final class OzonPackageDTO implements OzonPackageEventInterface
     private int $total = 0;
 
     #[Assert\Valid]
-    private Supply\OzonPackageSupplyDTO $supply;
+    private OzonPackageSupplyDTO $supply;
 
     private bool $inPart = true;
 
@@ -61,7 +62,7 @@ final class OzonPackageDTO implements OzonPackageEventInterface
     public function __construct(UserProfileUid $profile)
     {
         $this->ord = new ArrayCollection();
-        $this->supply = new Supply\OzonPackageSupplyDTO();
+        $this->supply = new OzonPackageSupplyDTO();
 
         $this->profile = $profile;
     }
@@ -87,9 +88,9 @@ final class OzonPackageDTO implements OzonPackageEventInterface
         return $this->ord;
     }
 
-    public function addOrd(Orders\OzonPackageOrderDTO $ord): self
+    public function addOrd(OzonPackageOrderDTO $ord): self
     {
-        $filter = $this->ord->filter(function(Orders\OzonPackageOrderDTO $element) use ($ord) {
+        $filter = $this->ord->filter(function(OzonPackageOrderDTO $element) use ($ord) {
             return $ord->getId()->equals($element->getId());
         });
 
@@ -110,7 +111,7 @@ final class OzonPackageDTO implements OzonPackageEventInterface
     }
 
     /** Поставка */
-    public function getSupply(): Supply\OzonPackageSupplyDTO
+    public function getSupply(): OzonPackageSupplyDTO
     {
         return $this->supply;
     }
@@ -153,6 +154,4 @@ final class OzonPackageDTO implements OzonPackageEventInterface
     {
         return $this->profile;
     }
-
-
 }

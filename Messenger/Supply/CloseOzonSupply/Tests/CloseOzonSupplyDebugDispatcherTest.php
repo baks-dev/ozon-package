@@ -22,12 +22,14 @@
  *
  */
 
-namespace BaksDev\Ozon\Package\Repository\Supply\OpenOzonSupplyIdentifier\Tests;
+declare(strict_types=1);
 
-use BaksDev\Ozon\Package\Repository\Supply\OpenOzonSupplyIdentifier\OpenOzonSupplyIdentifierInterface;
-use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+namespace BaksDev\Ozon\Package\Messenger\Supply\CloseOzonSupply\Tests;
+
+use BaksDev\Ozon\Package\Entity\Supply\OzonSupply;
+use BaksDev\Ozon\Package\Messenger\Supply\CloseOzonSupply\CloseOzonSupplyDispatcher;
+use BaksDev\Ozon\Package\Messenger\Supply\OzonSupplyMessage;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -39,24 +41,34 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 #[Group('ozon-package')]
 #[When(env: 'test')]
-class OpenOzonSupplyIdentifierRepositoryTest extends KernelTestCase
+class CloseOzonSupplyDebugDispatcherTest extends KernelTestCase
 {
     public function testUseCase(): void
     {
-        /** @var OpenOzonSupplyIdentifierInterface $OpenOzonSupplyIdentifierInterface */
-        $OpenOzonSupplyIdentifierInterface = self::getContainer()->get(OpenOzonSupplyIdentifierInterface::class);
+        // Бросаем событие консольной команды
+        $dispatcher = self::getContainer()->get(EventDispatcherInterface::class);
+        $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
+        $dispatcher->dispatch($event, 'console.command');
 
-        $result = $OpenOzonSupplyIdentifierInterface
-            ->forProfile(new UserProfileUid(UserProfileUid::TEST))
-            ->find();
-
-        if(false === $result instanceof OzonSupplyUid)
-        {
-            self::assertTrue(true);
-            echo sprintf('%s результат репозитория не протестирован  %s %s', PHP_EOL, self::class, PHP_EOL);
-            return;
-        }
+        /** @var CloseOzonSupplyDispatcher $CloseOzonSupplyDispatcher */
+        $CloseOzonSupplyDispatcher = self::getContainer()
+            ->get(CloseOzonSupplyDispatcher::class);
 
         self::assertTrue(true);
+        return;
+
+        /** @var EntityManagerInterface $em */
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+
+        /** @var OzonSupply|null $main */
+        $main = $em->getRepository(OzonSupply::class)
+            ->find('019cce17-70fc-75ea-82ac-37a33aa2d734');
+
+        $message = new OzonSupplyMessage(
+            $main->getId(),
+            $main->getEvent(),
+        );
+
+        $CloseOzonSupplyDispatcher($message);
     }
 }

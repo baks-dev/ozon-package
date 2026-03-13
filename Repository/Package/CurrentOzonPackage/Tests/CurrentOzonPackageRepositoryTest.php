@@ -22,53 +22,44 @@
  *
  */
 
-declare(strict_types=1);
+namespace BaksDev\Ozon\Package\Repository\Package\CurrentOzonPackage\Tests;
 
-namespace BaksDev\Ozon\Package\Repository\Package\AllOzonPackageOrders\Tests;
-
-use BaksDev\Ozon\Package\Repository\Package\AllOzonPackageOrders\AllOzonPackageOrdersInResult;
-use BaksDev\Ozon\Package\Repository\Package\AllOzonPackageOrders\AllOzonPackageOrdersInterface;
+use BaksDev\Ozon\Package\Entity\Package\Event\OzonPackageEvent;
+use BaksDev\Ozon\Package\Repository\Package\CurrentOzonPackage\CurrentOzonPackageInterface;
+use BaksDev\Ozon\Package\Type\Package\Id\OzonPackageUid;
 use PHPUnit\Framework\Attributes\Group;
-use ReflectionClass;
-use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\Attribute\When;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 #[Group('ozon-package')]
 #[When(env: 'test')]
-class AllOzonPackageOrdersRepositoryTest extends KernelTestCase
+class CurrentOzonPackageRepositoryTest extends KernelTestCase
 {
-    public function testUseCase(): void
+    public function testRepository(): void
     {
-        /** @var AllOzonPackageOrdersInterface $AllOrderPackageInterface */
-        $AllOrderPackageInterface = self::getContainer()->get(AllOzonPackageOrdersInterface::class);
 
-        $result = $AllOrderPackageInterface
-            ->byTypeDeliveryFbsOzon()
-            ->findPaginator()
-            ->getData();
+        // Бросаем событие консольной команды
+        $dispatcher = self::getContainer()->get(EventDispatcherInterface::class);
+        $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
+        $dispatcher->dispatch($event, 'console.command');
 
-        if(true === empty($result))
+        /** @var CurrentOzonPackageInterface $CurrentOzonPackageInterface */
+        $CurrentOzonPackageInterface = self::getContainer()->get(CurrentOzonPackageInterface::class);
+
+        $result = $CurrentOzonPackageInterface
+            ->forPackage(new OzonPackageUid(OzonPackageUid::TEST))
+            ->find();
+
+        if(false === $result instanceof OzonPackageEvent)
         {
             self::assertTrue(true);
             echo sprintf('%s результат репозитория не протестирован  %s %s', PHP_EOL, self::class, PHP_EOL);
             return;
-        }
-
-        $current = current($result);
-
-        // Вызываем все геттеры
-        $reflectionClass = new ReflectionClass(AllOzonPackageOrdersInResult::class);
-        $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
-
-        foreach($methods as $method)
-        {
-            // Методы без аргументов
-            if($method->getNumberOfParameters() === 0)
-            {
-                // Вызываем метод
-                $method->invoke($current);
-            }
         }
 
         self::assertTrue(true);

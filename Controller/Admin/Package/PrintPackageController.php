@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,7 @@ final class PrintPackageController extends AbstractController
     /** Продукты в упаковке */
     private ?array $products = null;
 
-    /** Настройки штих-кода для Ozon */
+    /** Настройки штихкода для Ozon */
     private ?array $settings = null;
 
     /** Упаковки */
@@ -76,7 +76,7 @@ final class PrintPackageController extends AbstractController
     private ?array $stickers = null;
 
     /**
-     * Печать штрихкодов, Честных знаков и стикеров для УПАКОВКИ
+     * Печать штрихкодов, Честных знаков и стикеров для ОДНОЙ УПАКОВКИ
      */
     #[Route('/admin/ozon/packages/print/pack/{id}', name: 'admin.package.print.pack', methods: ['GET', 'POST'])]
     public function printer(
@@ -113,13 +113,13 @@ final class PrintPackageController extends AbstractController
         foreach($orders as $order)
         {
             $OrderUid = (string) $order->getOrderId();
-            $this->orders[$OzonPackageUid][$order->getOrderNumber().':'.$order->getPostingNumber()] = $OrderUid;
+            $this->orders[$OzonPackageUid][$order->getOrderNumber().':'.$order->getOrderPosting()] = $OrderUid;
 
             /**
              * Получаем стикеры Ozon
              */
 
-            $key = $order->getPostingNumber();
+            $key = $order->getOrderPosting();
             $ozonSticker = $cache->getItem($key)->get();
 
             /**
@@ -131,7 +131,7 @@ final class PrintPackageController extends AbstractController
             {
                 $message = new ProcessOzonPackageStickersMessage(
                     new OzonTokenUid($order->getOrderToken()),
-                    $order->getPostingNumber(),
+                    $order->getOrderPosting(),
                 );
 
                 /** @see ProcessOzonPackageStickersDispatcher */
@@ -141,7 +141,7 @@ final class PrintPackageController extends AbstractController
 
                 if(null !== $ozonSticker)
                 {
-                    $this->stickers[$order->getPostingNumber()] = $ozonSticker;
+                    $this->stickers[$order->getOrderPosting()] = $ozonSticker;
                 }
                 else
                 {
@@ -150,7 +150,7 @@ final class PrintPackageController extends AbstractController
             }
             else
             {
-                $this->stickers[$order->getPostingNumber()] = $ozonSticker;
+                $this->stickers[$order->getOrderPosting()] = $ozonSticker;
             }
 
             /**
@@ -211,11 +211,15 @@ final class PrintPackageController extends AbstractController
             return new Response('Продукция в упаковке не найдена', Response::HTTP_NOT_FOUND);
         }
 
-        if(empty($Product->getProductBarcode()))
+
+        if(true === empty($Product->getProductBarcode()))
         {
             $Logger->critical(
-                'ozon-package: В продукции не указан штрихкод',
-                [$Product, self::class.':'.__LINE__]
+                message: 'ozon-package: В продукции не указан штрихкод',
+                context: [
+                    self::class.':'.__LINE__,
+                    var_export($Product, true),
+                ]
             );
 
             return new Response('В продукции не указан штрихкод', Response::HTTP_NOT_FOUND);
@@ -265,19 +269,24 @@ final class PrintPackageController extends AbstractController
             ->addData(['identifier' => $OzonPackageUid]) // ID упаковки
             ->send('remove');
 
-        $render = $this->render(
-            [
-                'packages' => $this->packages,
-                'products' => $this->products,
-                'orders' => $this->orders,
+        $forRender = [
+            'packages' => $this->packages,
+            'products' => $this->products,
+            'orders' => $this->orders,
 
-                'matrix' => $this->matrix,
-                'barcodes' => $this->barcodes,
-                'settings' => $this->settings,
-                'stickers' => $this->stickers,
-            ],
-            'admin.package',
-            '/print/print.html.twig'
+            'matrix' => $this->matrix,
+            'barcodes' => $this->barcodes,
+            'settings' => $this->settings,
+            'stickers' => $this->stickers,
+        ];
+
+        /**
+         * Обязательно рендерим перед отправкой на печать
+         */
+        $render = $this->render(
+            $forRender,
+            dir: 'admin.package',
+            file: '/print/print.html.twig'
         );
 
         /** Если были получены все стикеры ОЗОН - отмечаем распечатанным */

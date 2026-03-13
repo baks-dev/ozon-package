@@ -22,12 +22,14 @@
  *
  */
 
-namespace BaksDev\Ozon\Package\Repository\Supply\OpenOzonSupplyIdentifier\Tests;
+declare(strict_types=1);
 
-use BaksDev\Ozon\Package\Repository\Supply\OpenOzonSupplyIdentifier\OpenOzonSupplyIdentifierInterface;
-use BaksDev\Ozon\Package\Type\Supply\Id\OzonSupplyUid;
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+namespace BaksDev\Ozon\Package\Messenger\ProductStocks\Tests;
+
+use BaksDev\Ozon\Package\Entity\Package\OzonPackage;
+use BaksDev\Ozon\Package\Messenger\Package\OzonPackageMessage;
+use BaksDev\Ozon\Package\Messenger\ProductStocks\UpdateProductStocksToExtraditionDispatcher;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -39,24 +41,34 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 #[Group('ozon-package')]
 #[When(env: 'test')]
-class OpenOzonSupplyIdentifierRepositoryTest extends KernelTestCase
+class UpdateProductStocksToExtraditionDebugDispatcherTest extends KernelTestCase
 {
     public function testUseCase(): void
     {
-        /** @var OpenOzonSupplyIdentifierInterface $OpenOzonSupplyIdentifierInterface */
-        $OpenOzonSupplyIdentifierInterface = self::getContainer()->get(OpenOzonSupplyIdentifierInterface::class);
+        // Бросаем событие консольной команды
+        $dispatcher = self::getContainer()->get(EventDispatcherInterface::class);
+        $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
+        $dispatcher->dispatch($event, 'console.command');
 
-        $result = $OpenOzonSupplyIdentifierInterface
-            ->forProfile(new UserProfileUid(UserProfileUid::TEST))
-            ->find();
-
-        if(false === $result instanceof OzonSupplyUid)
-        {
-            self::assertTrue(true);
-            echo sprintf('%s результат репозитория не протестирован  %s %s', PHP_EOL, self::class, PHP_EOL);
-            return;
-        }
+        /** @var UpdateProductStocksToExtraditionDispatcher $UpdateProductStocksToExtraditionDispatcher */
+        $UpdateProductStocksToExtraditionDispatcher = self::getContainer()
+            ->get(UpdateProductStocksToExtraditionDispatcher::class);
 
         self::assertTrue(true);
+        return;
+
+        /** @var EntityManagerInterface $em */
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+
+        /** @var OzonPackage|null $manufacturePart */
+        $main = $em->getRepository(OzonPackage::class)
+            ->find('019cced9-9170-7e18-b3dd-edcef0086879'); // extradition
+
+        $message = new OzonPackageMessage(
+            $main->getId(),
+            $main->getEvent(),
+        );
+
+        $UpdateProductStocksToExtraditionDispatcher($message);
     }
 }

@@ -32,8 +32,8 @@ use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-#[When(env: 'test')]
 #[Group('ozon-package')]
+#[When(env: 'test')]
 class PrintOzonPackageOrdersRepositoryTest extends KernelTestCase
 {
     public function testRepository(): void
@@ -41,13 +41,27 @@ class PrintOzonPackageOrdersRepositoryTest extends KernelTestCase
         /** @var PrintOzonPackageOrdersInterface $PrintOzonPackageOrdersInterface */
         $PrintOzonPackageOrdersInterface = self::getContainer()->get(PrintOzonPackageOrdersInterface::class);
 
-        $PrintOzonPackageOrdersInterface->byOzonSupply(new OzonSupplyUid('01987404-aa39-7590-81ab-cc0c42101e97'));
+        $PrintOzonPackageOrdersInterface->byOzonSupply(new OzonSupplyUid(OzonSupplyUid::TEST));
 
         $fetchAll = $PrintOzonPackageOrdersInterface
             ->fetchAll();
 
+        if(false === $fetchAll)
+        {
+            self::assertTrue(true);
+            echo sprintf('%s результат репозитория не протестирован  %s %s', PHP_EOL, self::class, PHP_EOL);
+            return;
+        }
+
         $findAll = $PrintOzonPackageOrdersInterface
             ->findAll();
+
+        if(false === $findAll)
+        {
+            self::assertTrue(true);
+            echo sprintf('%s результат репозитория не протестирован  %s %s', PHP_EOL, self::class, PHP_EOL);
+            return;
+        }
 
         self::assertTrue(true);
     }

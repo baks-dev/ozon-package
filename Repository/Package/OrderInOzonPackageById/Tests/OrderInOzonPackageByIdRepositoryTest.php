@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,50 @@
 
 namespace BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById\Tests;
 
+use BaksDev\Orders\Order\Type\Id\OrderUid;
 use BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById\OrderInOzonPackageByIdInterface;
+use BaksDev\Ozon\Package\Repository\Package\OrderInOzonPackageById\OrderInOzonPackageByIdResult;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionClass;
+use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-#[When(env: 'test')]
 #[Group('ozon-package')]
+#[When(env: 'test')]
 class OrderInOzonPackageByIdRepositoryTest extends KernelTestCase
 {
     public function testUseCase(): void
     {
         /** @var OrderInOzonPackageByIdInterface $OrderInOzonPackageByIdInterface */
         $OrderInOzonPackageByIdInterface = self::getContainer()->get(OrderInOzonPackageByIdInterface::class);
+
+        $result = $OrderInOzonPackageByIdInterface
+            ->forOrder(new OrderUid(OrderUid::TEST))
+            ->find();
+
+        if(false === $result)
+        {
+            self::assertTrue(true);
+            echo sprintf('%s результат репозитория не протестирован  %s %s', PHP_EOL, self::class, PHP_EOL);
+            return;
+        }
+
+        $current = $result->current();
+
+        // Вызываем все геттеры
+        $reflectionClass = new ReflectionClass(OrderInOzonPackageByIdResult::class);
+        $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
+
+        foreach($methods as $method)
+        {
+            // Методы без аргументов
+            if($method->getNumberOfParameters() === 0)
+            {
+                // Вызываем метод
+                $method->invoke($current);
+            }
+        }
 
         self::assertTrue(true);
     }

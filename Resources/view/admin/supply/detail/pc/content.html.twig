@@ -79,6 +79,9 @@
 
                 {% for item in query_data %}
 
+                    {# Определяем, что у заказа есть связанные отправления #}
+                    {# part = true - этот заказ либо без отправлений, либо первое из них #}
+                    {# part = false - если этот заказ - одно из нескольких отправлений #}
                     {% set part = number != item.orderNumber %}
 
                     {% if item.status == 'new' %}
@@ -94,7 +97,7 @@
                     {% endif %}
 
                     <div class="col p-1" data-index="{{ loop.index }}">
-                        <div class="border-bottom border-4 rounded-4 {{ color }} {{ part ?: 'border-light bg-light' }} ">
+                        <div class="border-bottom border-4 rounded-4 {{ color }}">
 
                             {{ include(_self|replace({ "content.html.twig" : "includes/card.html.twig" })) }}
 

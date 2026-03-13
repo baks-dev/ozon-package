@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -57,19 +57,6 @@ final class ExistOrderInOzonPackageRepository implements ExistOrderInOzonPackage
         return $this;
     }
 
-    public function forOrderProduct(OrderProduct|OrderProductUid $product): self
-    {
-
-        if($product instanceof OrderProduct)
-        {
-            $product = $product->getId();
-        }
-
-        $this->product = $product;
-
-        return $this;
-    }
-
     /**
      * Метод проверяет, имеется ли заказ в упаковке (без статуса ERROR)
      */
@@ -77,12 +64,7 @@ final class ExistOrderInOzonPackageRepository implements ExistOrderInOzonPackage
     {
         if(false === ($this->order instanceof OrderUid))
         {
-            throw new InvalidArgumentException('Invalid Argument Order');
-        }
-
-        if(false === ($this->product instanceof OrderProductUid))
-        {
-            throw new InvalidArgumentException('Invalid Argument OrderProductUid');
+            throw new InvalidArgumentException('Не передан обязательный параметр запроса order');
         }
 
         $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class);
@@ -95,14 +77,6 @@ final class ExistOrderInOzonPackageRepository implements ExistOrderInOzonPackage
                 key: 'order',
                 value: $this->order,
                 type: OrderUid::TYPE
-            );
-
-        $dbal
-            ->andWhere('ozon_order.product = :product')
-            ->setParameter(
-                key: 'product',
-                value: $this->product,
-                type: OrderProductUid::TYPE
             );
 
         $dbal

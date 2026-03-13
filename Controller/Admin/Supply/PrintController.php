@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,15 @@ declare(strict_types=1);
 
 namespace BaksDev\Ozon\Package\Controller\Admin\Supply;
 
+use BaksDev\Barcode\Writer\BarcodeFormat;
+use BaksDev\Barcode\Writer\BarcodeType;
+use BaksDev\Barcode\Writer\BarcodeWrite;
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Ozon\Package\Entity\Supply\Event\Identifier\OzonSupplyIdentifier;
+use BaksDev\Ozon\Package\Repository\Package\PrintOzonPackageOrders\PrintOzonPackageOrdersInterface;
+use BaksDev\Ozon\Package\Repository\Supply\OzonPackageOrdersByOzonSupply\OzonPackageOrdersByOzonSupplyInterface;
+use RuntimeException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,12 +48,50 @@ final class PrintController extends AbstractController
     /**
      * QR код поставки Ozon
      */
-    #[Route('/admin/ozon/supply/print/{id}', name: 'admin.supply.print', methods: ['GET', 'POST'])]
+    #[Route('/admin/ozon/supply/print/{id}', name: 'admin.supply.print.qrcode', methods: ['GET', 'POST'])]
     public function printer(
         Request $request,
         #[MapEntity] OzonSupplyIdentifier $ozonSupplyIdentifier,
+        OzonPackageOrdersByOzonSupplyInterface $ozonPackageOrdersByOzonSupplyRepository,
+        PrintOzonPackageOrdersInterface $printOzonPackageOrders,
+        BarcodeWrite $barcodeWrite,
     ): Response
     {
-        return new Response('QR код поставки Ozon не найден', Response::HTTP_NOT_FOUND);
+        $data = $ozonSupplyIdentifier->getIdentifier();
+
+        $orders = $ozonPackageOrdersByOzonSupplyRepository
+            ->byOzonSupply($ozonSupplyIdentifier->getMain())
+            ->findAll()
+            ->getData();
+
+        $barcode = $barcodeWrite
+            ->text($data)
+            ->type(BarcodeType::QRCode)
+            ->format(BarcodeFormat::SVG)
+            ->generate(implode(DIRECTORY_SEPARATOR, ['barcode', 'test']));
+
+        if($barcode === false)
+        {
+            /**
+             * Проверить права на исполнение
+             * chmod +x /home/DOMAIN/vendor/baks-dev/barcode/Writer/Generate
+             * chmod +x /home/DOMAIN/vendor/baks-dev/barcode/Reader/Decode
+             * */
+
+            throw new RuntimeException('Barcode write error');
+        }
+
+        $render = $barcodeWrite->render();
+        $render = strip_tags($render, ['path']);
+        $render = trim($render);
+        $barcodeWrite->remove();
+
+        return $this->render(
+            [
+                'qrcode' => $render,
+                'number' => $data,
+                'count' => count($orders),
+            ]
+        );
     }
 }

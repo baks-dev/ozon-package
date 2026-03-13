@@ -1,6 +1,8 @@
+{# @var item \BaksDev\Ozon\Package\Repository\Package\AllOzonPackageOrders\AllOzonPackageOrdersInResult #}
+
 {% set product_offers = [] %}
 
-{% set dedline = date(item.order_data)|date_modify("+24 hours") %}
+{% set dedline = item.orderData|date_modify("+24 hours") %}
 {% set difference = dedline.diff(date("now")) %}
 {% set hour = difference.d * 24 + difference.h %}
 
@@ -50,7 +52,7 @@
 
             <div class="d-flex flex-column small gap-1 p-2 bg-cover lazy col-2 w-100 position-relative"
                  style="height: 200px;"
-                 data-bg="{{ cdn_image_path(item.product_image, item.product_image_ext, item.product_image_cdn, 'medium') }}">
+                 data-bg="{{ cdn_image_path(item.productImage, item.productImageExt, item.productImageCdn, 'medium') }}">
                 <div class="icon rounded-circle bg-contain p-1 mb-2 shadow position-absolute"
                      style="width: 25px; height: 25px;">
 
@@ -58,17 +60,18 @@
                 </div>
 
                 <form method="post" class="position-absolute bottom-0 end-0 p-1 d-flex gap-1">
-                    <input type="hidden" name="search_form[query]" value="{{ item.card_article }}">
+                    <input type="hidden" name="search_form[query]" value="{{ item.cardArticle }}">
 
                     <button type="submit"
                             class="btn btn-primary btn-sm small m-0  text-decoration-none text-nowrap lh-normal fw-normal"
-                            value="{{ item.card_article }}">
-                        <small>{{ item.card_article }}</small>
+                            value="{{ item.cardArticle }}">
+                        <small>{{ item.cardArticle }}</small>
                     </button>
 
-                    <div class="btn-group p-0" role="group">
+                    {# Информация о складских остатках #}
+                    {% if item.stocksQuantity !== 0 %}
+                        <div class="btn-group p-0" role="group">
 
-                        {% if item.stock_available is not empty %}
                             <a href="{{ path('products-stocks:admin.total.index') }}"
                                class="btn btn-success btn-sm small"
                                target="_blank"
@@ -77,11 +80,12 @@
                                data-bs-placement="bottom"
                                data-bs-delay='{"show":600,"hide":100}'
                                title='Незарезервированное количество на складе'>
-                                {{ item.stock_available }}
+                                {{ item.stocksQuantity }}
                             </a>
-                        {% endif %}
 
-                    </div>
+                        </div>
+                    {% endif %}
+
 
                 </form>
             </div>
@@ -94,11 +98,11 @@
                      data-bs-toggle="tooltip"
                      data-bs-placement="top"
                      data-bs-delay='{"show":600,"hide":100}'
-                     title="{{ item.product_name }}">
+                     title="{{ item.productName }}">
 
                     <a href="{# {{ (is_granted(ROLE~'_EDIT') or is_granted('ROLE_ADMIN')) ? path('products-product:admin.newedit.edit', { id: item.event }) }} #}"
                        class="fw-bolder mb-1 text-dark text-decoration-none">
-                        {{ item.product_name|capitalize }}
+                        {{ item.productName|capitalize }}
                     </a>
                 </div>
 
@@ -106,31 +110,31 @@
                 <div class="text-muted fw-bolder">
 
                     {# Значение множественного варианта ТП #}
-                    {{ item.product_variation_value|call_twig_func(item.product_variation_reference~'_render') ~
-                    item.product_modification_value|call_twig_func(item.product_modification_reference~'_render') }}
+                    {{ item.productVariationValue|call_twig_func(item.productVariationReference~'_render') ~
+                    item.productModificationValue|call_twig_func(item.productModificationReference~'_render') }}
 
                     {# Значение торгового предложения #}
-                    {{ item.product_offer_value|call_twig_func(item.product_offer_reference~'_render') }}
+                    {{ item.productOfferValue|call_twig_func(item.productOfferReference~'_render') }}
 
                     {# Постфикс торгового предложения #}
-                    {{ item.product_offer_postfix }}
+                    {{ item.productOfferPostfix }}
                     {# Постфикс множественного варианта #}
-                    {{ item.product_variation_postfix }}
+                    {{ item.productVariationPostfix }}
                     {# Постфикс модификации #}
-                    {{ item.product_modification_postfix }}
+                    {{ item.productModificationPostfix }}
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center small">
 
                     <div class="d-flex align-items-center gap-1 text-primary pointer copy small"
-                         data-copy="{{ item.product_article }}">
+                         data-copy="{{ item.productArticle }}">
 
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="14"
                              height="14" fill="currentColor" viewBox="0 0 115.77 122.88">
                             <path d="M89.62,13.96v7.73h12.19h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02v0.02 v73.27v0.01h-0.02c-0.01,3.84-1.57,7.33-4.1,9.86c-2.51,2.5-5.98,4.06-9.82,4.07v0.02h-0.02h-61.7H40.1v-0.02 c-3.84-0.01-7.34-1.57-9.86-4.1c-2.5-2.51-4.06-5.98-4.07-9.82h-0.02v-0.02V92.51H13.96h-0.01v-0.02c-3.84-0.01-7.34-1.57-9.86-4.1 c-2.5-2.51-4.06-5.98-4.07-9.82H0v-0.02V13.96v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07V0h0.02h61.7 h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02V13.96L89.62,13.96z M79.04,21.69v-7.73v-0.02h0.02 c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v64.59v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h12.19V35.65 v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07v-0.02h0.02H79.04L79.04,21.69z M105.18,108.92V35.65v-0.02 h0.02c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v73.27v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h61.7h0.02 v0.02c0.91,0,1.75-0.39,2.37-1.01c0.61-0.61,1-1.46,1-2.37h-0.02V108.92L105.18,108.92z"></path>
                         </svg>
 
-                        {{ item.product_article }}
+                        {{ item.productArticle }}
                     </div>
 
                 </div>
@@ -139,7 +143,8 @@
 
                     <div>
                         <span>Количество: &nbsp;</span>
-                        <strong>{{ item.order_total }}</strong> шт.
+                        {#                        <strong>{{ item.orderTotal }}</strong> шт. #}
+                        <strong>{{ item.orderTotal }}</strong> шт.
                     </div>
 
                     {% if is_granted('ROLE_MANUFACTURE_PART_ADD') or is_granted('ROLE_ADMIN') %}
@@ -150,15 +155,15 @@
                             {% set btn_class = 'btn-primary' %}
                             {% set disabled = false %}
 
-                            {% if item.stock_total is empty %}
+                            {% if item.getStocksQuantity == 0 %}
                                 {% set btn_title = 'Продукции нет на складе' %}
                                 {% set btn_class = 'disabled btn-light' %}
                                 {% set disabled = 'disabled="disabled"' %}
 
                             {% endif %}
 
-                            {% if item.exist_manufacture %}
-                                {% set btn_title = 'Продукция на производстве '~ item.exist_manufacture %}
+                            {% if item.existManufacture %}
+                                {% set btn_title = 'Продукция на производстве '~ item.existManufacture %}
                                 {% set btn_class = 'disabled btn-light' %}
                                 {% set disabled = 'disabled="disabled"' %}
                             {% endif %}
@@ -169,19 +174,18 @@
                                   data-bs-delay='{"show":600,"hide":100}'
                                   title='{{ btn_title }}'>
 
-                            <button data-href="{{ disabled ?: path('ozon-package:admin.package.add', {
-                                product: item.product,
-                                offer: item.offer,
-                                variation: item.variation,
-                                modification: item.modification,
-                                total: item.order_total
-                            }) }}"
-
-                                    class="btn btn-sm modal-link disabled {{ btn_class }}"
+                            <button class="btn btn-sm modal-link disabled {{ btn_class }}"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal"
                                     {{ disabled }}
-                                    {% if item.exist_manufacture %} id="manufacture-{{ item.order_id }}"{% endif %}>
+
+                                    data-href="{{ disabled ?: path('ozon-package:admin.package.add', {
+                                        product: item.productEvent,
+                                        offer: item.offerUid,
+                                        variation: item.variationUid,
+                                        modification: item.modificationUid,
+                                        total: item.orderTotal
+                                    }) }}">
 
                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
                                         class="bi bi-folder-plus" viewBox="0 0 16 16">

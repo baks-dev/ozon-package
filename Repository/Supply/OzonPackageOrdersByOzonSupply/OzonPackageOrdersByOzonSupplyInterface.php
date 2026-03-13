@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -32,13 +32,14 @@ use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterDTO;
 
 interface OzonPackageOrdersByOzonSupplyInterface
 {
-
     public function search(SearchDTO $search): self;
 
     public function filter(ProductFilterDTO $filter): self;
 
     public function byOzonSupply(OzonSupply|OzonSupplyUid $supply): self;
 
-    /** Метод возвращает пагинатор OzonSupply */
+    /**
+     * Метод возвращает пагинатор с заказами, добавленными в OzonSupply
+     */
     public function findAll(): PaginatorInterface;
 }

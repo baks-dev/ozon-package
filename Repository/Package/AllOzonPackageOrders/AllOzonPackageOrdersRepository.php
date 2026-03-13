@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -126,29 +126,31 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
             ->bindLocal();
 
         $dbal
-            ->from(OrderInvariable::class, 'invariable');
+            ->from(OrderInvariable::class, 'orders_invariable');
 
+        $dbal
+            ->join(
+                'orders_invariable',
+                Order::class,
+                'orders',
+                'orders.id = orders_invariable.main',
+            );
 
-        $dbal->join(
-            'invariable',
-            Order::class,
-            'orders',
-            'orders.id = invariable.main',
-        );
-
+        /** Только заказы со статусом «На упаковке» */
         $dbal
             ->join(
                 'orders',
                 OrderEvent::class,
-                'event',
-                'event.id = orders.event AND event.status = :status'
+                'orders_event',
+                '
+                    orders_event.id = orders.event AND 
+                    orders_event.status = :status'
             )
             ->setParameter(
                 key: 'status',
-                value: OrderStatusPackage::class, // Только заказа со статусом «На упаковке»
+                value: OrderStatusPackage::class,
                 type: OrderStatus::TYPE
             );
-
 
         $dbal
             ->leftJoin(
@@ -158,6 +160,7 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
                 'order_user.event = orders.event'
             );
 
+        /** Только заказы с типами Ozon */
         $dbal
             ->addSelect('MIN(order_delivery.delivery_date) AS order_data')
             ->join(
@@ -176,6 +179,11 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
             );
 
         $dbal
+            ->addSelect('order_product.event')
+            ->addSelect('order_product.product')
+            ->addSelect('order_product.offer')
+            ->addSelect('order_product.variation')
+            ->addSelect('order_product.modification')
             ->leftJoin(
                 'orders',
                 OrderProduct::class,
@@ -184,11 +192,14 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
             );
 
         $dbal
-            ->addSelect('SUM(order_product_price.total) AS order_total')
-            ->addSelect('order_product.product')
-            ->addSelect('order_product.offer')
-            ->addSelect('order_product.variation')
-            ->addSelect('order_product.modification')
+            ->addSelect("
+                JSON_AGG (DISTINCT
+                            JSONB_BUILD_OBJECT
+                            (
+                                'total', order_product_price.total
+                            )
+                         ) AS order_total",
+            )
             ->leftJoin(
                 'order_product',
                 OrderPrice::class,
@@ -196,8 +207,10 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
                 'order_product_price.product = order_product.id'
             );
 
+        /** Продукт */
+
         $dbal
-            ->leftJoin(
+            ->join(
                 'order_product',
                 ProductEvent::class,
                 'product_event',
@@ -210,7 +223,7 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
                 'order_product',
                 ProductInfo::class,
                 'product_info',
-                'product_info.product = product_event.main '
+                'product_info.product = product_event.main'
             );
 
         if($this->filter?->getCategory())
@@ -230,6 +243,7 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
                 CategoryProductUid::TYPE
             );
         }
+
 
         $dbal
             ->addSelect('product_trans.name AS product_name')
@@ -449,36 +463,52 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
             ) AS product_article
 		');
 
-
         /** Наличие на складе */
-
         $dbal
-            ->addSelect('SUM(stock.total) AS stock_total')
-            ->addSelect('(SUM(stock.total) - SUM(stock.reserve)) AS stock_available')
+            ->addSelect("
+                JSON_AGG 
+                (
+                    JSONB_BUILD_OBJECT
+                        (
+                            'total', stock.total,
+                            'reserve', stock.reserve
+                        )
+                ) AS stocks_quantity",
+            )
             ->join(
                 'product_modification',
                 ProductStockTotal::class,
                 'stock',
                 '
-                    stock.profile = invariable.profile 
+                    stock.profile = orders_invariable.profile
                     AND
-                    stock.product = product_event.main 
+                    stock.product = product_event.main
+                    
                     AND
                     (
-                        (product_offer.const IS NOT NULL AND stock.offer = product_offer.const) OR
-                        (product_offer.const IS NULL AND stock.offer IS NULL)
+                        CASE
+                            WHEN product_offer.const IS NOT NULL
+                            THEN stock.offer = product_offer.const
+                            ELSE stock.offer IS NULL
+                        END
                     )
                     AND
                     (
-                        (product_variation.const IS NOT NULL AND stock.variation = product_variation.const) OR
-                        (product_variation.const IS NULL AND stock.variation IS NULL)
+                        CASE
+                            WHEN product_variation.const IS NOT NULL
+                            THEN stock.variation = product_variation.const
+                            ELSE stock.variation IS NULL
+                        END
                     )
                     AND
                     (
-                        (product_modification.const IS NOT NULL AND stock.modification = product_modification.const) OR
-                        (product_modification.const IS NULL AND stock.modification IS NULL)
+                        CASE
+                            WHEN product_modification.const IS NOT NULL
+                            THEN stock.modification = product_modification.const
+                            ELSE stock.modification IS NULL
+                        END
                     )
-                ');
+                                ');
 
 
         /** Только товары, которых нет в производстве */
@@ -492,6 +522,7 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
             //            $dbal->allGroupByExclude();
         }
 
+
         /** Только заказы, которых нет в упаковке */
         //        $dbal->join(
         //            'orders',
@@ -500,20 +531,22 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
         //            'package.id != orders.id'
         //        );
 
+
         $dbal
-            ->where('invariable.profile = :profile OR invariable.profile IS NULL')
+            ->where('orders_invariable.profile = :profile OR orders_invariable.profile IS NULL')
             ->setParameter(
                 key: 'profile',
                 value: $this->profile ?: $this->UserProfileTokenStorage->getProfile(),
                 type: UserProfileUid::TYPE
             );
 
+
         $dbal->andWhereNotExists(
             OzonPackageOrder::class,
             'exist_package',
-            '
-                exist_package.id = orders.id AND exist_package.product = order_product.id'
+            'exist_package.id = orders.id'
         );
+
 
         $dbal->orderBy('order_data');
         $dbal->allGroupByExclude(['exist_part']);
@@ -529,7 +562,8 @@ final class AllOzonPackageOrdersRepository implements AllOzonPackageOrdersInterf
                 ->addSearchLike('product_trans.name');
         }
 
-        return $this->paginator->fetchAllAssociative($dbal);
+
+        return $this->paginator->fetchAllHydrate($dbal, AllOzonPackageOrdersInResult::class);
     }
 
     /** Только товары, которых нет в производстве */

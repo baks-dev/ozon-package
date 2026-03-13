@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -74,6 +74,18 @@ class OzonSupplyIdentifier extends EntityReadonly
         return (string) $this->main;
     }
 
+
+    public function getMain(): OzonSupplyUid
+    {
+        return $this->main;
+    }
+
+    /** Identifier */
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
+    }
+
     public function getDto($dto): mixed
     {
         $dto = is_string($dto) && class_exists($dto) ? new $dto() : $dto;
@@ -95,15 +107,5 @@ class OzonSupplyIdentifier extends EntityReadonly
         }
 
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
-    }
-
-    /**
-     * Helpers
-     */
-
-    /** Identifier */
-    public function getIdentifier(): string
-    {
-        return $this->identifier;
     }
 }

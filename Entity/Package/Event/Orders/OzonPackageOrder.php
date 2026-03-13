@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ namespace BaksDev\Ozon\Package\Entity\Package\Event\Orders;
 
 use BaksDev\Core\Entity\EntityEvent;
 use BaksDev\Orders\Order\Type\Id\OrderUid;
-use BaksDev\Orders\Order\Type\Product\OrderProductUid;
 use BaksDev\Ozon\Package\Entity\Package\Event\OzonPackageEvent;
 use BaksDev\Ozon\Package\Type\Package\Status\OzonPackageStatus;
 use Doctrine\DBAL\Types\Types;
@@ -55,13 +54,6 @@ class OzonPackageOrder extends EntityEvent
     #[ORM\Column(type: OrderUid::TYPE)]
     private OrderUid $id;
 
-    /** ID продукта в заказе */
-    #[Assert\NotBlank]
-    #[Assert\Uuid]
-    #[ORM\Id]
-    #[ORM\Column(type: OrderProductUid::TYPE)]
-    private OrderProductUid $product;
-
     /** Статус упаковки */
     #[Assert\NotBlank]
     #[ORM\Column(type: OzonPackageStatus::TYPE)]
@@ -79,6 +71,11 @@ class OzonPackageOrder extends EntityEvent
     public function __toString(): string
     {
         return (string) $this->event;
+    }
+
+    public function getOrderId(): OrderUid
+    {
+        return $this->id;
     }
 
     public function getDto($dto): mixed
