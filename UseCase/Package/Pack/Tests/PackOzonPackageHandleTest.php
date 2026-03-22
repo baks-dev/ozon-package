@@ -55,6 +55,7 @@ final class PackOzonPackageHandleTest extends KernelTestCase
     {
         /**
          * Инициализируем статус для итератора тегов
+         *
          * @var OzonPackageStatusCollection $OzonPackageStatus
          */
         $OzonPackageStatus = self::getContainer()->get(OzonPackageStatusCollection::class);
@@ -88,6 +89,7 @@ final class PackOzonPackageHandleTest extends KernelTestCase
     {
         /**
          * Инициируем статус для итератора тегов
+         *
          * @var OzonSupplyStatusCollection $OzonSupplyStatus
          */
         $OzonSupplyStatus = self::getContainer()->get(OzonSupplyStatusCollection::class);

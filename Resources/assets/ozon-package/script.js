@@ -22,20 +22,20 @@
  */
 
 previousValue = null;
-productTotal = document.getElementById('add_orders_package_form_total');
+productTotal = document.getElementById("add_orders_package_form_total");
 
-productTotal.addEventListener('focus', resetValue, false);
-productTotal.addEventListener('blur', restoreValue, false);
+productTotal.addEventListener("focus", resetValue, false);
+productTotal.addEventListener("blur", restoreValue, false);
 
 function resetValue()
 {
     previousValue = productTotal.value;
-    productTotal.value = '';
+    productTotal.value = "";
 }
 
 function restoreValue()
 {
-    if(productTotal.value === '')
+    if(productTotal.value === "")
     {
         productTotal.value = previousValue;
     }
@@ -43,10 +43,10 @@ function restoreValue()
 
 
 /** Событие на изменение количество в ручную */
-productTotal.addEventListener('input', orderModalCounter.debounce(300));
+productTotal.addEventListener("input", orderModalCounter.debounce(300));
 
 /** Счетчик  */
-document.querySelector('#plus').addEventListener('click', () =>
+document.querySelector("#plus").addEventListener("click", () =>
 {
 
     let price_total = productTotal;
@@ -61,14 +61,14 @@ document.querySelector('#plus').addEventListener('click', () =>
 });
 
 
-document.querySelector('#minus').addEventListener('click', () =>
+document.querySelector("#minus").addEventListener("click", () =>
 {
     let price_total = productTotal;
     let result = price_total.value * 1;
 
     if(result > 1)
     {
-        result = result - 1
+        result = result - 1;
         productTotal.value = result;
     }
 });

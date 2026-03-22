@@ -80,6 +80,38 @@ final class AddOrdersPackageDTO
         $this->profile = $profile;
     }
 
+    public function getTotal(): ?int
+    {
+        return $this->total;
+    }
+
+    public function setTotal(?int $total): void
+    {
+        $this->total = $total;
+    }
+
+    public function getIdentifier(): string
+    {
+        $identifier = $this->getProduct();
+
+        if($this->getOffer())
+        {
+            $identifier = $this->getOffer();
+        }
+
+        if($this->getVariation())
+        {
+            $identifier = $this->getVariation();
+        }
+
+        if($this->getModification())
+        {
+            $identifier = $this->getModification();
+        }
+
+        return (string) $identifier;
+    }
+
     public function getProduct(): ?ProductEventUid
     {
         return $this->product;
@@ -122,38 +154,6 @@ final class AddOrdersPackageDTO
     {
         $this->modification = $modification;
         return $this;
-    }
-
-    public function getTotal(): ?int
-    {
-        return $this->total;
-    }
-
-    public function setTotal(?int $total): void
-    {
-        $this->total = $total;
-    }
-
-    public function getIdentifier(): string
-    {
-        $identifier = $this->getProduct();
-
-        if($this->getOffer())
-        {
-            $identifier = $this->getOffer();
-        }
-
-        if($this->getVariation())
-        {
-            $identifier = $this->getVariation();
-        }
-
-        if($this->getModification())
-        {
-            $identifier = $this->getModification();
-        }
-
-        return (string) $identifier;
     }
 
     public function getProfile(): UserProfileUid

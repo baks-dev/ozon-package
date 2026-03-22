@@ -191,8 +191,8 @@ final class PrintSupplyController extends AbstractController
                             [
                                 self::class.':'.__LINE__,
                                 'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
-                                'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
-                            ]
+                                'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode',
+                            ],
                         );
 
                         throw new RuntimeException('Datamatrix write error');
@@ -220,7 +220,7 @@ final class PrintSupplyController extends AbstractController
                     {
                         $Logger->critical(
                             'ozon-package: Продукция в упаковке не найдена',
-                            [$order, self::class.':'.__LINE__]
+                            [$order, self::class.':'.__LINE__],
                         );
 
                         return new Response('Продукция в упаковке не найдена', Response::HTTP_NOT_FOUND);
@@ -248,8 +248,8 @@ final class PrintSupplyController extends AbstractController
                             [
                                 self::class.':'.__LINE__,
                                 'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
-                                'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
-                            ]
+                                'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode',
+                            ],
                         );
 
                         throw new RuntimeException('Barcode write error');
@@ -302,11 +302,12 @@ final class PrintSupplyController extends AbstractController
         $render = $this->render(
             $forRender,
             dir: 'admin.package',
-            file: '/print/print.html.twig'
+            file: '/print/print.html.twig',
         );
 
         /**
          * Отправляем сообщение в шину и отмечаем принт всех упаковок
+         *
          * @var array<string, bool> $printers
          */
         if(null !== $printers)

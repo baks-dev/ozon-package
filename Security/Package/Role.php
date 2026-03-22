@@ -41,6 +41,16 @@ final class Role implements RoleInterface, MenuAdminInterface
     public const string KEY = 's2gAUZUK';
 
     /**
+     * Метод возвращает позицию, в которую располагается ссылка в секции меню.
+     *
+     * @see BaksDevOzonBundle
+     */
+    public static function getSortMenu(): int
+    {
+        return 459;
+    }
+
+    /**
      * Добавляем раздел в меню администрирования.
      */
     public function getRole(): string
@@ -84,15 +94,6 @@ final class Role implements RoleInterface, MenuAdminInterface
     public function getGroupMenu(): MenuAdminSectionGroupCollectionInterface|bool
     {
         return new MenuGroupMarketplace();
-    }
-
-    /**
-     * Метод возвращает позицию, в которую располагается ссылка в секции меню.
-     * @see BaksDevOzonBundle
-     */
-    public static function getSortMenu(): int
-    {
-        return 459;
     }
 
 

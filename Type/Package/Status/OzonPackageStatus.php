@@ -72,19 +72,9 @@ final class OzonPackageStatus
         throw new InvalidArgumentException(sprintf('Not found OzonPackageStatus %s', $status));
     }
 
-    public function __toString(): string
-    {
-        return $this->status->getValue();
-    }
-
     public function getPackageStatus(): OzonPackageStatusInterface
     {
         return $this->status;
-    }
-
-    public function getPackageStatusValue(): string
-    {
-        return $this->status->getValue();
     }
 
     public static function getDeclared(): array
@@ -93,7 +83,7 @@ final class OzonPackageStatus
             get_declared_classes(),
             static function($className) {
                 return in_array(OzonPackageStatusInterface::class, class_implements($className), true);
-            }
+            },
         );
     }
 
@@ -102,5 +92,15 @@ final class OzonPackageStatus
         $status = new self($status);
 
         return $this->getPackageStatusValue() === $status->getPackageStatusValue();
+    }
+
+    public function getPackageStatusValue(): string
+    {
+        return $this->status->getValue();
+    }
+
+    public function __toString(): string
+    {
+        return $this->status->getValue();
     }
 }

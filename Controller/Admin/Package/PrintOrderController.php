@@ -94,6 +94,7 @@ final class PrintOrderController extends AbstractController
 
         /**
          * Получаем заказы в упаковке
+         *
          * @note один заказ - один продукт
          */
         $OzonPackageOrderResult = $OzonPackageOrderRepository
@@ -107,8 +108,8 @@ final class PrintOrderController extends AbstractController
                 'ozon-package: Не найдены заказы в упаковке',
                 [
                     self::class.':'.__LINE__,
-                    var_export($OrderUid, true)
-                ]
+                    var_export($OrderUid, true),
+                ],
             );
 
             return new Response('Заказов Ozon в упаковке не найдено', Response::HTTP_NOT_FOUND);
@@ -180,8 +181,8 @@ final class PrintOrderController extends AbstractController
                     [
                         self::class.':'.__LINE__,
                         'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
-                        'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
-                    ]
+                        'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode',
+                    ],
                 );
 
                 throw new RuntimeException('Datamatrix write error');
@@ -211,7 +212,7 @@ final class PrintOrderController extends AbstractController
         {
             $Logger->critical(
                 'ozon-package: Продукция в упаковке не найдена',
-                [self::class.':'.__LINE__]
+                [self::class.':'.__LINE__],
             );
 
             return new Response('Продукция в упаковке не найдена', Response::HTTP_NOT_FOUND);
@@ -241,8 +242,8 @@ final class PrintOrderController extends AbstractController
                 [
                     self::class.':'.__LINE__,
                     'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
-                    'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
-                ]
+                    'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode',
+                ],
             );
 
             throw new RuntimeException('Barcode write error');
@@ -271,7 +272,7 @@ final class PrintOrderController extends AbstractController
         $render = $this->render(
             $forRender,
             dir: 'admin.package',
-            file: '/print/order.html.twig'
+            file: '/print/order.html.twig',
         );
 
         if(true === $isPrint)

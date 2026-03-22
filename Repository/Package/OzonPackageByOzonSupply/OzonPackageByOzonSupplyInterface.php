@@ -38,6 +38,7 @@ interface OzonPackageByOzonSupplyInterface
 
     /**
      * Метод возвращает все идентификаторы упаковок в поставке
+     *
      * @return Generator<int, OzonPackageByOzonSupplyResult>|false
      */
     public function findAll(): Generator|false;

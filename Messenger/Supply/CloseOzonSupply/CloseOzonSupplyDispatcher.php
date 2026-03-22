@@ -132,11 +132,11 @@ final readonly class CloseOzonSupplyDispatcher
 
         $this->logger->info(
             message: sprintf('%s Поставка Ozon закрыта. Запущен процесс изменения связанных складских заявок и заказов',
-                $OzonSupplyEvent->getIdentifier() ?? 'Не известно'
+                $OzonSupplyEvent->getIdentifier() ?? 'Не известно',
             ),
             context: [
                 self::class.':'.__LINE__,
-                var_export($message, true)
+                var_export($message, true),
             ],
         );
     }

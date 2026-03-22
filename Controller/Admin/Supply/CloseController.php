@@ -73,7 +73,7 @@ final class CloseController extends AbstractController
             ->createForm(
                 type: OzonSupplyCloseForm::class,
                 data: $ozonSupplyCloseDTO,
-                options: ['action' => $this->generateUrl('ozon-package:admin.supply.close', ['id' => $ozonSupply->getId()]),]
+                options: ['action' => $this->generateUrl('ozon-package:admin.supply.close', ['id' => $ozonSupply->getId()]),],
             )
             ->handleRequest($request);
 
@@ -88,7 +88,7 @@ final class CloseController extends AbstractController
                 'page.close',
                 $handle instanceof OzonSupply ? 'success.close' : 'danger.close',
                 'ozon-package.supply',
-                $handle
+                $handle,
             );
 
             return $this->redirectToReferer();
@@ -96,7 +96,7 @@ final class CloseController extends AbstractController
 
         return $this->render([
             'form' => $form->createView(),
-            'identifier' => $ozonSupplyEvent->getIdentifier()
+            'identifier' => $ozonSupplyEvent->getIdentifier(),
         ]);
     }
 }

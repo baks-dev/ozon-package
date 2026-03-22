@@ -87,7 +87,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
             ->setParameter(
                 key: 'order',
                 value: $this->order,
-                type: OrderUid::TYPE
+                type: OrderUid::TYPE,
             );
 
         $dbal
@@ -96,7 +96,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                 'package_order',
                 OzonPackage::class,
                 'package',
-                'package.event = package_order.event'
+                'package.event = package_order.event',
             );
 
         $dbal
@@ -104,7 +104,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                 'package_order',
                 Order::class,
                 'ord',
-                'ord.id = package_order.id'
+                'ord.id = package_order.id',
             );
 
         $dbal
@@ -116,7 +116,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                 'invariable',
                 '
                     invariable.main = ord.id 
-                    '
+                    ',
             //                    AND invariable.token != NULL // @TODO
             );
 
@@ -129,7 +129,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                 'ord',
                 OrderProduct::class,
                 'ord_product',
-                'ord_product.event = ord.event'
+                'ord_product.event = ord.event',
             );
 
         /**
@@ -142,7 +142,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                 'ord_product',
                 OrderProductPosting::class,
                 'ord_product_posting',
-                'ord_product_posting.product = ord_product.id'
+                'ord_product_posting.product = ord_product.id',
             );
 
         /** Отправления заказа */
@@ -152,7 +152,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                 'ord_product',
                 OrderPosting::class,
                 'orders_posting',
-                'orders_posting.event = ord.event'
+                'orders_posting.event = ord.event',
             );
 
         if(class_exists(BaksDevMaterialsSignBundle::class))
@@ -174,7 +174,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                    THEN CONCAT ( '/upload/".$dbal->table(MaterialSignCode::class)."' , '/', code.name)
                    ELSE NULL
                 END AS code_image
-            "
+            ",
                 )
                 ->addSelect("code.ext AS code_ext")
                 ->addSelect("code.cdn AS code_cdn")
@@ -184,7 +184,7 @@ final class OrderInOzonPackageByIdRepository implements OrderInOzonPackageByIdIn
                     'sign_event',
                     MaterialSignCode::class,
                     'code',
-                    'code.main = sign_event.main'
+                    'code.main = sign_event.main',
                 );
         }
 

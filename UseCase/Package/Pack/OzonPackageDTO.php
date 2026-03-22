@@ -138,15 +138,15 @@ final class OzonPackageDTO implements OzonPackageEventInterface
         return $this->inPart;
     }
 
-    public function setOutPart(): self
-    {
-        $this->inPart = false;
-        return $this;
-    }
-
     public function setInPart(): self
     {
         $this->inPart = true;
+        return $this;
+    }
+
+    public function setOutPart(): self
+    {
+        $this->inPart = false;
         return $this;
     }
 

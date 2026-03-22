@@ -46,11 +46,11 @@ return static function(ContainerConfigurator $configurator) {
 
     $services->load(
         $NAMESPACE.'Type\Package\Status\OzonPackageStatus\\',
-        $PATH.implode(DIRECTORY_SEPARATOR, ['Type', 'Package', 'Status', 'OzonPackageStatus'])
+        $PATH.implode(DIRECTORY_SEPARATOR, ['Type', 'Package', 'Status', 'OzonPackageStatus']),
     );
 
     $services->load(
         $NAMESPACE.'Type\Supply\Status\OzonSupplyStatus\\',
-        $PATH.implode(DIRECTORY_SEPARATOR, ['Type', 'Supply', 'Status', 'OzonSupplyStatus'])
+        $PATH.implode(DIRECTORY_SEPARATOR, ['Type', 'Supply', 'Status', 'OzonSupplyStatus']),
     );
 };

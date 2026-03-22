@@ -72,7 +72,7 @@ final class OzonSupplyCurrentEventRepository implements OzonSupplyCurrentEventIn
             ->setParameter(
                 'supply',
                 $this->supply,
-                OzonSupplyUid::TYPE
+                OzonSupplyUid::TYPE,
             );
 
         $orm
@@ -81,7 +81,7 @@ final class OzonSupplyCurrentEventRepository implements OzonSupplyCurrentEventIn
                 OzonSupplyEvent::class,
                 'event',
                 'WITH',
-                'event.id = supply.event'
+                'event.id = supply.event',
             );
 
         return $orm->getOneOrNullResult() ?: false;

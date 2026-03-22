@@ -51,9 +51,9 @@ final class OzonSupplyNewHandler extends AbstractHandler
         $this->messageDispatch
             ->addClearCacheOther('ozon-package')
             ->dispatch(
-            message: new OzonSupplyMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-            transport: (string) $command->getProfile(),
-        );
+                message: new OzonSupplyMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
+                transport: (string) $command->getProfile(),
+            );
 
         return $this->main;
     }

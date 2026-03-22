@@ -47,6 +47,7 @@ final class CloseOzonSupplyHandleTest extends KernelTestCase
     {
         /**
          * Инициируем статус для итератора тегов
+         *
          * @var OzonSupplyStatusCollection $OzonSupplyStatus
          */
         $OzonSupplyStatus = self::getContainer()->get(OzonSupplyStatusCollection::class);

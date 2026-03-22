@@ -172,8 +172,8 @@ final class PrintPackageController extends AbstractController
                         [
                             self::class.':'.__LINE__,
                             'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
-                            'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
-                        ]
+                            'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode',
+                        ],
                     );
 
                     throw new RuntimeException('Datamatrix write error');
@@ -205,7 +205,7 @@ final class PrintPackageController extends AbstractController
         {
             $Logger->critical(
                 'ozon-package: Продукция в упаковке не найдена',
-                [$order, self::class.':'.__LINE__]
+                [$order, self::class.':'.__LINE__],
             );
 
             return new Response('Продукция в упаковке не найдена', Response::HTTP_NOT_FOUND);
@@ -219,7 +219,7 @@ final class PrintPackageController extends AbstractController
                 context: [
                     self::class.':'.__LINE__,
                     var_export($Product, true),
-                ]
+                ],
             );
 
             return new Response('В продукции не указан штрихкод', Response::HTTP_NOT_FOUND);
@@ -243,8 +243,8 @@ final class PrintPackageController extends AbstractController
                 [
                     self::class.':'.__LINE__,
                     'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Writer/Generate',
-                    'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode'
-                ]
+                    'chmod +x /home/PROJECT_DIR/vendor/baks-dev/barcode/Reader/Decode',
+                ],
             );
 
             throw new RuntimeException('Barcode write error');
@@ -286,7 +286,7 @@ final class PrintPackageController extends AbstractController
         $render = $this->render(
             $forRender,
             dir: 'admin.package',
-            file: '/print/print.html.twig'
+            file: '/print/print.html.twig',
         );
 
         /** Если были получены все стикеры ОЗОН - отмечаем распечатанным */

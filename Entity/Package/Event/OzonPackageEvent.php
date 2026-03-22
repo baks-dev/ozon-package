@@ -130,11 +130,6 @@ class OzonPackageEvent extends EntityEvent
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
 
-    public function getId(): OzonPackageEventUid
-    {
-        return $this->id;
-    }
-
     public function getMain(): ?OzonPackageUid
     {
         return $this->main;
@@ -143,6 +138,11 @@ class OzonPackageEvent extends EntityEvent
     public function setMain(OzonPackageUid|OzonPackage $main): void
     {
         $this->main = $main instanceof OzonPackage ? $main->getId() : $main;
+    }
+
+    public function getId(): OzonPackageEventUid
+    {
+        return $this->id;
     }
 
     /**

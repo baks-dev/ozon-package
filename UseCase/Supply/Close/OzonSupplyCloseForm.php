@@ -38,7 +38,7 @@ final class OzonSupplyCloseForm extends AbstractType
         $builder->add(
             'ozon_supply_close',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-danger']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-danger']],
         );
     }
 

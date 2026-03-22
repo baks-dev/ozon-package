@@ -46,6 +46,7 @@ class LastOzonSupplyRepositoryTest extends KernelTestCase
 
         /**
          * Инициализируем статус для итератора тегов
+         *
          * @var OzonSupplyStatusCollection $OzonSupplyStatusCollection
          */
         $OzonSupplyStatusCollection = self::getContainer()->get(OzonSupplyStatusCollection::class);

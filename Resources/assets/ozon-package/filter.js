@@ -21,13 +21,13 @@
  *
  */
 
-let filter = document.getElementById('package_filter');
+let filter = document.getElementById("package_filter");
 
 if(filter)
 {
-    const packs = document.querySelectorAll('div.pack');
+    const packs = document.querySelectorAll("div.pack");
 
-    filter.addEventListener('input', function()
+    filter.addEventListener("input", function()
     {
         const filterText = this.value.toLowerCase();
 
@@ -36,17 +36,21 @@ if(filter)
             const name = pack.dataset.name.toLowerCase();
             if(name.includes(filterText))
             {
-                pack.classList.remove('d-none');
-            } else
+                pack.classList.remove("d-none");
+            }
+            else
             {
-                pack.classList.add('d-none');
+                pack.classList.add("d-none");
             }
         });
     });
 
-    document.getElementById('reset_filter').addEventListener('click', fn =>
+    document.getElementById("reset_filter").addEventListener("click", fn =>
     {
         filter.value = null;
-        packs.forEach(pack => { pack.classList.remove('d-none'); });
-    })
+        packs.forEach(pack =>
+        {
+            pack.classList.remove("d-none");
+        });
+    });
 }

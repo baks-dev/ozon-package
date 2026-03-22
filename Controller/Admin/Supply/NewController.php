@@ -77,7 +77,7 @@ final class NewController extends AbstractController
             'page.new',
             $handle instanceof OzonSupply ? 'success.new' : 'danger.new',
             'ozon-package.supply',
-            $handle
+            $handle,
         );
 
         return $this->redirectToReferer();

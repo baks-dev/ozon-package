@@ -91,7 +91,7 @@ final class PrintController extends AbstractController
                 'qrcode' => $render,
                 'number' => $data,
                 'count' => count($orders),
-            ]
+            ],
         );
     }
 }

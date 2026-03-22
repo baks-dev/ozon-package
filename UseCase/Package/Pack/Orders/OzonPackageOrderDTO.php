@@ -61,18 +61,6 @@ final class OzonPackageOrderDTO implements OzonPackageOrderInterface
         $this->status = new OzonPackageStatus(OzonPackageStatusNew::class);
     }
 
-    /** ID заказа */
-    public function getId(): OrderUid
-    {
-        return $this->id;
-    }
-
-    public function setId(Order|OrderUid $id): self
-    {
-        $this->id = $id instanceof Order ? $id->getId() : $id;
-        return $this;
-    }
-
     /** ID продукта в заказе */
     public function getProduct(): OrderProductUid
     {
@@ -82,6 +70,18 @@ final class OzonPackageOrderDTO implements OzonPackageOrderInterface
     public function setProduct(OrderProduct|OrderProductUid $product): self
     {
         $this->product = $product instanceof OrderProduct ? $product->getId() : $product;
+        return $this;
+    }
+
+    /** ID заказа */
+    public function getId(): OrderUid
+    {
+        return $this->id;
+    }
+
+    public function setId(Order|OrderUid $id): self
+    {
+        $this->id = $id instanceof Order ? $id->getId() : $id;
         return $this;
     }
 

@@ -71,7 +71,7 @@ final class CurrentOzonPackageRepository implements CurrentOzonPackageInterface
             ->setParameter(
                 'package',
                 $this->package,
-                OzonPackageUid::TYPE
+                OzonPackageUid::TYPE,
             );
 
         /** event */
@@ -81,7 +81,7 @@ final class CurrentOzonPackageRepository implements CurrentOzonPackageInterface
                 OzonPackageEvent::class,
                 'event',
                 Join::WITH,
-                'event.main = main.id'
+                'event.main = main.id',
             );
 
         return $orm->getOneOrNullResult() ?: false;

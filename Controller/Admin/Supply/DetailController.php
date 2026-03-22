@@ -62,7 +62,7 @@ final class DetailController extends AbstractController
             ->createForm(
                 type: SearchForm::class,
                 data: $search = new SearchDTO(),
-                options: ['action' => $this->generateUrl('ozon-package:admin.supply.detail', ['id' => $ozonSupply->getId()])]
+                options: ['action' => $this->generateUrl('ozon-package:admin.supply.detail', ['id' => $ozonSupply->getId()])],
             )
             ->handleRequest($request);
 
@@ -71,7 +71,7 @@ final class DetailController extends AbstractController
             ->createForm(
                 type: ProductFilterForm::class,
                 data: $filter = new ProductFilterDTO(),
-                options: ['action' => $this->generateUrl('ozon-package:admin.supply.detail', ['id' => $ozonSupply->getId()])]
+                options: ['action' => $this->generateUrl('ozon-package:admin.supply.detail', ['id' => $ozonSupply->getId()])],
             )
             ->handleRequest($request);
 
@@ -93,7 +93,7 @@ final class DetailController extends AbstractController
                 'supply' => $ozonSupplyResult,
                 'search' => $searchForm->createView(),
                 'filter' => $filterForm->createView(),
-            ]
+            ],
         );
     }
 }

@@ -114,11 +114,6 @@ final readonly class OrderInOzonPackageByIdResult
         return $this->status ? new MaterialSignStatus($this->status) : false;
     }
 
-    public function isExistCode(): bool
-    {
-        return empty($this->code_string) === false;
-    }
-
     /** @see MaterialSignCode */
     public function getCode(): string|false
     {
@@ -130,6 +125,11 @@ final readonly class OrderInOzonPackageByIdResult
         }
 
         return false;
+    }
+
+    public function isExistCode(): bool
+    {
+        return empty($this->code_string) === false;
     }
 
     /** @see MaterialSignCode */

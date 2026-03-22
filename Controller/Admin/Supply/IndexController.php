@@ -58,7 +58,7 @@ final class IndexController extends AbstractController
             ->createForm(
                 type: SearchForm::class,
                 data: $search = new SearchDTO(),
-                options: ['action' => $this->generateUrl('ozon-package:admin.supply.index')]
+                options: ['action' => $this->generateUrl('ozon-package:admin.supply.index')],
             )
             ->handleRequest($request);
 
@@ -93,7 +93,7 @@ final class IndexController extends AbstractController
                 'query' => $WbSupply,
                 'search' => $searchForm->createView(),
                 'filter' => $filterForm->createView(),
-            ]
+            ],
         );
     }
 }

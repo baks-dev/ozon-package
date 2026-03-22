@@ -68,19 +68,19 @@
 
 setTimeout(function SpgGHaQzun() {
 
-    if (typeof Centrifuge === 'function') {
+    if (typeof Centrifuge === "function") {
         centrifuge = new Centrifuge("wss://{{ centrifugo_dsn }}/connection/websocket",
             {
                 token: "{{ token }}",
                 getToken: function (ctx) {
-                    return getToken('/centrifugo/credentials/user', ctx);
+                    return getToken("/centrifugo/credentials/user", ctx);
                 },
-                debug: '{{ app.environment }}' === 'dev',
+                debug: '{{ app.environment }}' === "dev",
             });
 
 		{% if opens.status is defined and opens.status != 'complete' %}
 
-			  centrifuge.newSubscription('{{ opens.id }}').on('publication', function (ctx) {
+			  centrifuge.newSubscription('{{ opens.id }}').on("publication", function (ctx) {
 
                         /** Если передан идентификатор поставки */
                        if (ctx.data.number)
@@ -90,15 +90,15 @@ setTimeout(function SpgGHaQzun() {
                           return;
                       }
 
-                  if (ctx.data.identifier && ctx.data.identifier === 'complete')
+                  if (ctx.data.identifier && ctx.data.identifier === "complete")
                       {
                           let $supply = document.getElementById('supply-{{ opens.id }}');
                           if ($supply )
                           {
-                               $supply.removeAttribute('disabled');
+                               $supply.removeAttribute("disabled");
                           }
 
-                          $successSupplyToast = '{ "type":"success" , ' +
+                          $successSupplyToast = "{ \"type\":\"success\" , " +
                                 '"header":"{{ 'breadcrumb.complete'|trans({}, 'ozon-package.supply') }}"  , ' +
                                 '"message" : "{{ 'success.complete'|trans({}, 'ozon-package.supply') }}" }';
 
@@ -114,12 +114,12 @@ setTimeout(function SpgGHaQzun() {
                     $package.innerHTML += ctx.data.product;
 
                     $total = parseInt(document.getElementById('total-{{ opens.id }}').textContent);
-                    document.getElementById('total-{{ opens.id }}').textContent = $total + ctx.data.total
+                    document.getElementById('total-{{ opens.id }}').textContent = $total + ctx.data.total;
 
-                    $package.querySelectorAll('.modal-link').forEach(function (item, i, arr) {
+                    $package.querySelectorAll(".modal-link").forEach(function (item, i, arr) {
                         /* Добавляем атрибуты модального окна */
-                        item.dataset.bsTarget = '#modal';
-                        item.dataset.bsToggle = 'modal';
+                        item.dataset.bsTarget = "#modal";
+                        item.dataset.bsToggle = "modal";
                         modalLink(item);
                     });
 
@@ -128,27 +128,27 @@ setTimeout(function SpgGHaQzun() {
 		{% endif %}
 
         /** обновляем кнопку печати после обновления стикером */
-		centrifuge.newSubscription('publish').on('publication', function (ctx) {
+		centrifuge.newSubscription("publish").on("publication", function (ctx) {
 
                 let identifier = ctx.data.identifier;
 
                 setTimeout(function uLxKzZxuUE()
                 {
-                     let $printButton = document.getElementById('print-'+ctx.data.identifier);
+                     let $printButton = document.getElementById("print-"+ctx.data.identifier);
 
                      if ($printButton)
                      {
-                         $printButton.classList.remove('btn-danger');
-                         $printButton.classList.add('btn-primary');
-                         $printButton.setAttribute('disabled', '');
-                         $printButton.removeAttribute('disabled');
-                         $printButton.removeAttribute('id');
+                         $printButton.classList.remove("btn-danger");
+                         $printButton.classList.add("btn-primary");
+                         $printButton.setAttribute("disabled", "");
+                         $printButton.removeAttribute("disabled");
+                         $printButton.removeAttribute("id");
 
-                         $printButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" '
-                             + 'class="bi bi-printer-fill" viewBox="0 0 16 16">'
-                             + '<path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>'
-                             + '<path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>'
-                             + '</svg>';
+                         $printButton.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" "
+                             + "class=\"bi bi-printer-fill\" viewBox=\"0 0 16 16\">"
+                             + "<path d=\"M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z\"/>"
+                             + "<path d=\"M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z\"/>"
+                             + "</svg>";
                      }
 
                 }, 500);
@@ -157,7 +157,7 @@ setTimeout(function SpgGHaQzun() {
 
 
         /** Удаляем из списка у всех продукт */
-		centrifuge.newSubscription('remove').on('publication', function (ctx) {
+		centrifuge.newSubscription("remove").on("publication", function (ctx) {
 
             console.log(ctx.data.identifier);
 

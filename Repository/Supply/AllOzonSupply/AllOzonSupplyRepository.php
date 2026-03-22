@@ -79,7 +79,7 @@ final class AllOzonSupplyRepository implements AllOzonSupplyInterface
                 'supply_const',
                 OzonSupply::class,
                 'supply',
-                'supply.id = supply_const.main'
+                'supply.id = supply_const.main',
             );
 
         $dbal
@@ -88,7 +88,7 @@ final class AllOzonSupplyRepository implements AllOzonSupplyInterface
                 'supply',
                 OzonSupplyEvent::class,
                 'event',
-                'event.id = supply.event'
+                'event.id = supply.event',
             );
 
         $dbal
@@ -97,7 +97,7 @@ final class AllOzonSupplyRepository implements AllOzonSupplyInterface
                 'supply',
                 OzonSupplyModify::class,
                 'modify',
-                'modify.event = supply.event'
+                'modify.event = supply.event',
             );
 
         /**
@@ -126,7 +126,7 @@ final class AllOzonSupplyRepository implements AllOzonSupplyInterface
                 'supply',
                 OzonSupplyIdentifier::class,
                 'ozon',
-                'ozon.main = supply.id'
+                'ozon.main = supply.id',
             );
 
         $dbal

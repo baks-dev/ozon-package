@@ -36,6 +36,14 @@ final class OzonPackageStatusError implements OzonPackageStatusInterface
      */
     public const string STATUS = 'error';
 
+    /**
+     * Проверяет, относится ли строка к данному объекту
+     */
+    public static function equals(string $status): bool
+    {
+        return mb_strtolower($status) === self::STATUS;
+    }
+
     public function __toString(): string
     {
         return self::STATUS;
@@ -47,14 +55,5 @@ final class OzonPackageStatusError implements OzonPackageStatusInterface
     public function getValue(): string
     {
         return self::STATUS;
-    }
-
-
-    /**
-     * Проверяет, относится ли строка к данному объекту
-     */
-    public static function equals(string $status): bool
-    {
-        return mb_strtolower($status) === self::STATUS;
     }
 }

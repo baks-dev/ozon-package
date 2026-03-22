@@ -126,9 +126,9 @@ class OzonSupplyEvent extends EntityEvent
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
 
-    public function getId(): OzonSupplyEventUid
+    public function getMain(): ?OzonSupplyUid
     {
-        return $this->id;
+        return $this->main;
     }
 
     /**
@@ -141,9 +141,9 @@ class OzonSupplyEvent extends EntityEvent
         $this->main = $main instanceof OzonSupply ? $main->getId() : $main;
     }
 
-    public function getMain(): ?OzonSupplyUid
+    public function getId(): OzonSupplyEventUid
     {
-        return $this->main;
+        return $this->id;
     }
 
     /** Статус поставки */

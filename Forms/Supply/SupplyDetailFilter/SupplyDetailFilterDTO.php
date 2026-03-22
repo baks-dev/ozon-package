@@ -65,6 +65,16 @@ final class SupplyDetailFilterDTO
         private Request $request
     ) {}
 
+    public function getCategory(bool $readonly = false): ?CategoryProductUid
+    {
+        if($readonly)
+        {
+            return $this->category;
+        }
+
+        return $this->category ?: $this->request->getSession()->get(self::category);
+    }
+
     public function setCategory(CategoryProductUid|string|null $category): void
     {
         if(empty($category))
@@ -78,16 +88,6 @@ final class SupplyDetailFilterDTO
         }
 
         $this->category = $category;
-    }
-
-    public function getCategory(bool $readonly = false): ?CategoryProductUid
-    {
-        if($readonly)
-        {
-            return $this->category;
-        }
-
-        return $this->category ?: $this->request->getSession()->get(self::category);
     }
 
     public function getOffer(): ?string

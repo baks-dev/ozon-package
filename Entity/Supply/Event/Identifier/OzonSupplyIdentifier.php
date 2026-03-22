@@ -69,15 +69,14 @@ class OzonSupplyIdentifier extends EntityReadonly
         $this->main = $event->getMain();
     }
 
-    public function __toString(): string
-    {
-        return (string) $this->main;
-    }
-
-
     public function getMain(): OzonSupplyUid
     {
         return $this->main;
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->main;
     }
 
     /** Identifier */

@@ -77,7 +77,7 @@ final  class OzonSupplyRepository implements OzonSupplyInterface
             ->setParameter(
                 key: 'supply',
                 value: $this->supply,
-                type: OzonSupplyUid::TYPE
+                type: OzonSupplyUid::TYPE,
             );
 
         $dbal
@@ -87,7 +87,7 @@ final  class OzonSupplyRepository implements OzonSupplyInterface
                 'supply',
                 OzonSupplyInvariable::class,
                 'supply_const',
-                'supply_const.main = supply.id'
+                'supply_const.main = supply.id',
             );
 
 
@@ -97,7 +97,7 @@ final  class OzonSupplyRepository implements OzonSupplyInterface
                 'supply',
                 OzonSupplyEvent::class,
                 'event',
-                'event.id = supply.event'
+                'event.id = supply.event',
             );
 
         $dbal
@@ -106,7 +106,7 @@ final  class OzonSupplyRepository implements OzonSupplyInterface
                 'supply',
                 OzonSupplyModify::class,
                 'modify',
-                'modify.event = supply.event'
+                'modify.event = supply.event',
             );
 
 
@@ -116,7 +116,7 @@ final  class OzonSupplyRepository implements OzonSupplyInterface
                 'supply',
                 OzonSupplyIdentifier::class,
                 'ozon',
-                'ozon.main = supply.id'
+                'ozon.main = supply.id',
             );
 
         $dbal->setMaxResults(1);

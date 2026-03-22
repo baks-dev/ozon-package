@@ -37,6 +37,14 @@ final class OzonSupplyStatusNew implements OzonSupplyStatusInterface
      */
     public const string STATUS = 'new';
 
+    /**
+     * Проверяет, относится ли строка к данному объекту
+     */
+    public static function equals(string $status): bool
+    {
+        return mb_strtolower($status) === self::STATUS;
+    }
+
     public function __toString(): string
     {
         return self::STATUS;
@@ -48,13 +56,5 @@ final class OzonSupplyStatusNew implements OzonSupplyStatusInterface
     public function getValue(): string
     {
         return self::STATUS;
-    }
-
-    /**
-     * Проверяет, относится ли строка к данному объекту
-     */
-    public static function equals(string $status): bool
-    {
-        return mb_strtolower($status) === self::STATUS;
     }
 }

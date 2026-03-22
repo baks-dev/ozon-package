@@ -69,6 +69,15 @@ final class OzonPackageByOzonSupplyRepository implements OzonPackageByOzonSupply
     }
 
     /**
+     * @return array<int, OzonPackageByOzonSupplyResult>|false
+     */
+    public function toArray(): array|false
+    {
+        $Generator = $this->findAll();
+        return (false === $Generator || $Generator->valid() === false) ? false : iterator_to_array($Generator);
+    }
+
+    /**
      * Метод возвращает все идентификаторы упаковок в поставке
      *
      * @return Generator<int, OzonPackageByOzonSupplyResult>|false
@@ -94,7 +103,7 @@ final class OzonPackageByOzonSupplyRepository implements OzonPackageByOzonSupply
             ->setParameter(
                 'supply',
                 $this->supply,
-                OzonSupplyUid::TYPE
+                OzonSupplyUid::TYPE,
             );
 
         if(true === $this->print)
@@ -105,14 +114,5 @@ final class OzonPackageByOzonSupplyRepository implements OzonPackageByOzonSupply
         $dbal->addOrderBy('supply.event');
 
         return $dbal->fetchAllHydrate(OzonPackageByOzonSupplyResult::class);
-    }
-
-    /**
-     * @return array<int, OzonPackageByOzonSupplyResult>|false
-     */
-    public function toArray(): array|false
-    {
-        $Generator = $this->findAll();
-        return (false === $Generator || $Generator->valid() === false) ? false : iterator_to_array($Generator);
     }
 }

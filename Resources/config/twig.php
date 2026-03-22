@@ -30,7 +30,7 @@ return static function(TwigConfig $twig) {
 
     $twig->path(
         BaksDevOzonPackageBundle::PATH.implode(DIRECTORY_SEPARATOR, ['Resources', 'view', '']),
-        'ozon-package'
+        'ozon-package',
     );
 
 };

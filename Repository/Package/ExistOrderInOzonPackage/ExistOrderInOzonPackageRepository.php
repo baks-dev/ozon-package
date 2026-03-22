@@ -76,7 +76,7 @@ final class ExistOrderInOzonPackageRepository implements ExistOrderInOzonPackage
             ->setParameter(
                 key: 'order',
                 value: $this->order,
-                type: OrderUid::TYPE
+                type: OrderUid::TYPE,
             );
 
         $dbal
@@ -84,14 +84,14 @@ final class ExistOrderInOzonPackageRepository implements ExistOrderInOzonPackage
             ->setParameter(
                 key: 'status',
                 value: new OzonPackageStatus(OzonPackageStatusError::class),
-                type: OzonPackageStatus::TYPE
+                type: OzonPackageStatus::TYPE,
             );
 
         $dbal->join(
             'ozon_order',
             OzonPackage::class,
             'package',
-            'package.event = ozon_order.event'
+            'package.event = ozon_order.event',
         );
 
         return $dbal->fetchExist();

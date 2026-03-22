@@ -53,11 +53,6 @@ class OzonSupply
         return (string) $this->id;
     }
 
-    public function getId(): OzonSupplyUid
-    {
-        return $this->id;
-    }
-
     public function getEvent(): OzonSupplyEventUid
     {
         return $this->event;
@@ -66,5 +61,10 @@ class OzonSupply
     public function setEvent(OzonSupplyEventUid|OzonSupplyEvent $event): void
     {
         $this->event = $event instanceof OzonSupplyEvent ? $event->getId() : $event;
+    }
+
+    public function getId(): OzonSupplyUid
+    {
+        return $this->id;
     }
 }

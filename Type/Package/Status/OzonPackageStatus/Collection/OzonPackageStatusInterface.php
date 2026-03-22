@@ -31,13 +31,13 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface OzonPackageStatusInterface
 {
     /**
-     * Возвращает значение (value)
-     */
-    public function getValue(): string;
-
-    /**
      * Проверяет, относится ли строка к данному объекту
      */
     public static function equals(string $status): bool;
+
+    /**
+     * Возвращает значение (value)
+     */
+    public function getValue(): string;
 
 }

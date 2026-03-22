@@ -56,6 +56,7 @@ use BaksDev\Products\Product\Entity\Offers\Variation\ProductVariation;
 use BaksDev\Products\Product\Entity\Photo\ProductPhoto;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
 use Generator;
+use InvalidArgumentException;
 
 final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersInterface
 {
@@ -83,7 +84,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
     {
         if(false === ($this->supply instanceof OzonSupplyUid))
         {
-            throw new \InvalidArgumentException('Не передан обязательный параметр запроса $supply');
+            throw new InvalidArgumentException('Не передан обязательный параметр запроса $supply');
         }
 
         $dbal = $this->DBALQueryBuilder
@@ -101,7 +102,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'package_supply',
                 OzonSupply::class,
                 'ozon_supply',
-                ' ozon_supply.id = :supply'
+                ' ozon_supply.id = :supply',
             )
             ->setParameter('supply', $this->supply, OzonSupplyUid::TYPE);
 
@@ -112,7 +113,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'package_supply',
                 OzonPackageEvent::class,
                 'package_event',
-                'package_event.id = package_supply.event'
+                'package_event.id = package_supply.event',
             );
 
         $dbal
@@ -120,7 +121,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'package_event',
                 OzonPackageOrder::class,
                 'package_orders',
-                'package_orders.event = package_event.id'
+                'package_orders.event = package_event.id',
             );
 
         /** Стикеры Ozon */
@@ -129,7 +130,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'package_orders',
                 Order::class,
                 'ord',
-                'ord.id = package_orders.id'
+                'ord.id = package_orders.id',
             );
 
         $dbal->join(
@@ -137,7 +138,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             OrderProduct::class,
             'ord_product',
             '
-                ord_product.event = ord.event'
+                ord_product.event = ord.event',
         );
 
         $dbal
@@ -146,7 +147,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductEvent::class,
                 'product_event',
-                'product_event.id = ord_product.product'
+                'product_event.id = ord_product.product',
             );
 
         $dbal
@@ -155,7 +156,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductInfo::class,
                 'product_info',
-                'product_info.product = product_event.main'
+                'product_info.product = product_event.main',
             );
 
         $dbal
@@ -164,7 +165,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
         /* Торговое предложение */
@@ -179,7 +180,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.id = ord_product.offer OR product_offer.id IS NULL'
+                'product_offer.id = ord_product.offer OR product_offer.id IS NULL',
             );
 
         /** OfferBarcode */
@@ -189,7 +190,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_offer',
                 ProductOfferBarcode::class,
                 'product_offer_barcode',
-                'product_offer_barcode.offer = product_offer.id'
+                'product_offer_barcode.offer = product_offer.id',
             );
 
         /* Получаем тип торгового предложения */
@@ -199,7 +200,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
         /* Получаем название торгового предложения */
@@ -210,7 +211,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'category_offer',
                 CategoryProductOffersTrans::class,
                 'category_offer_trans',
-                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
+                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local',
             );
 
 
@@ -225,7 +226,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductVariation::class,
                 'product_variation',
-                'product_variation.id = ord_product.variation OR product_variation.id IS NULL '
+                'product_variation.id = ord_product.variation OR product_variation.id IS NULL ',
             );
 
         /** Variation Barcode */
@@ -235,7 +236,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_variation',
                 ProductVariationBarcode::class,
                 'product_variation_barcode',
-                'product_variation_barcode.variation = product_variation.id'
+                'product_variation_barcode.variation = product_variation.id',
             );
 
 
@@ -245,7 +246,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             'product_variation',
             CategoryProductVariation::class,
             'category_variation',
-            'category_variation.id = product_variation.category_variation'
+            'category_variation.id = product_variation.category_variation',
         );
 
         /* Получаем название множественного варианта */
@@ -256,7 +257,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'category_variation',
                 CategoryProductVariationTrans::class,
                 'category_variation_trans',
-                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local'
+                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local',
             );
 
 
@@ -271,7 +272,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductModification::class,
                 'product_modification',
-                'product_modification.id = ord_product.modification OR product_modification.id IS NULL '
+                'product_modification.id = ord_product.modification OR product_modification.id IS NULL ',
             );
 
         /** Modification Barcode */
@@ -281,7 +282,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_modification',
                 ProductModificationBarcode::class,
                 'product_modification_barcode',
-                'product_modification_barcode.modification = product_modification.id'
+                'product_modification_barcode.modification = product_modification.id',
             );
 
         /* Получаем тип модификации множественного варианта */
@@ -291,7 +292,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_modification',
                 CategoryProductModification::class,
                 'category_modification',
-                'category_modification.id = product_modification.category_modification'
+                'category_modification.id = product_modification.category_modification',
             );
 
         /* Получаем название типа модификации */
@@ -302,7 +303,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'category_modification',
                 CategoryProductModificationTrans::class,
                 'category_modification_trans',
-                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local'
+                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local',
             );
 
 
@@ -328,7 +329,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                         ELSE NULL
                     END
                     )
-                    AS barcodes"
+                    AS barcodes",
         );
 
         $dbal->addSelect('
@@ -346,21 +347,21 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             'product_event',
             ProductPhoto::class,
             'product_photo',
-            'product_photo.event = product_event.id AND product_photo.root = true'
+            'product_photo.event = product_event.id AND product_photo.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductModificationImage::class,
             'product_modification_image',
-            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true'
+            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductVariationImage::class,
             'product_variation_image',
-            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true'
+            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true',
         );
 
 
@@ -368,7 +369,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             'product_offer',
             ProductOfferImage::class,
             'product_offer_images',
-            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true'
+            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true',
         );
 
 
@@ -385,7 +386,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
 					CONCAT ( '/upload/".$dbal->table(ProductPhoto::class)."' , '/', product_photo.name)
 			   ELSE NULL
 			END AS product_image
-		"
+		",
         );
 
         /* Флаг загрузки файла CDN */
@@ -449,7 +450,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
     {
         if(false === ($this->supply instanceof OzonSupplyUid))
         {
-            throw new \InvalidArgumentException('Не передан обязательный параметр запроса $supply');
+            throw new InvalidArgumentException('Не передан обязательный параметр запроса $supply');
         }
 
         $dbal = $this->DBALQueryBuilder
@@ -467,7 +468,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ozon_package',
                 OzonPackageEvent::class,
                 'ozon_package_event',
-                'ozon_package_event.id = ozon_package.event'
+                'ozon_package_event.id = ozon_package.event',
             );
 
         $dbal
@@ -476,7 +477,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ozon_package',
                 OzonPackageSupply::class,
                 'ozon_package_supply',
-                'ozon_package_supply.event = ozon_package.event'
+                'ozon_package_supply.event = ozon_package.event',
             );
 
         $dbal
@@ -489,7 +490,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ozon_package',
                 OzonPackageOrder::class,
                 'ozon_package_order',
-                'ozon_package_order.event = ozon_package.event'
+                'ozon_package_order.event = ozon_package.event',
             );
 
         $dbal
@@ -497,7 +498,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ozon_package_order',
                 Order::class,
                 'ord',
-                'ord.id = ozon_package_order.id'
+                'ord.id = ozon_package_order.id',
             );
 
         $dbal
@@ -505,7 +506,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord',
                 OrderInvariable::class,
                 'orders_invariable',
-                'orders_invariable.event = ord.event'
+                'orders_invariable.event = ord.event',
             );
 
         $dbal->join(
@@ -513,7 +514,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             OrderProduct::class,
             'ord_product',
             '
-                ord_product.event = ord.event'
+                ord_product.event = ord.event',
         )
             ->addGroupBy('ozon_package_order.sort');
 
@@ -523,7 +524,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductEvent::class,
                 'product_event',
-                'product_event.id = ord_product.product'
+                'product_event.id = ord_product.product',
             );
 
         $dbal
@@ -531,7 +532,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductInfo::class,
                 'product_info',
-                'product_info.product = product_event.main'
+                'product_info.product = product_event.main',
             );
 
         $dbal
@@ -540,7 +541,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
         /* Торговое предложение */
@@ -555,7 +556,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.id = ord_product.offer OR product_offer.id IS NULL'
+                'product_offer.id = ord_product.offer OR product_offer.id IS NULL',
             );
 
         /** Offer Barcode */
@@ -565,7 +566,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_offer',
                 ProductOfferBarcode::class,
                 'product_offer_barcode',
-                'product_offer_barcode.offer = product_offer.id'
+                'product_offer_barcode.offer = product_offer.id',
             );
 
         /* Получаем тип торгового предложения */
@@ -575,7 +576,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
         /* Получаем название торгового предложения */
@@ -586,7 +587,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'category_offer',
                 CategoryProductOffersTrans::class,
                 'category_offer_trans',
-                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
+                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local',
             );
 
 
@@ -601,7 +602,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductVariation::class,
                 'product_variation',
-                'product_variation.id = ord_product.variation OR product_variation.id IS NULL '
+                'product_variation.id = ord_product.variation OR product_variation.id IS NULL ',
             );
 
         /** Variation Barcode */
@@ -611,7 +612,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_variation',
                 ProductVariationBarcode::class,
                 'product_variation_barcode',
-                'product_variation_barcode.variation = product_variation.id'
+                'product_variation_barcode.variation = product_variation.id',
             );
 
 
@@ -621,7 +622,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             'product_variation',
             CategoryProductVariation::class,
             'category_variation',
-            'category_variation.id = product_variation.category_variation'
+            'category_variation.id = product_variation.category_variation',
         );
 
         /* Получаем название множественного варианта */
@@ -632,7 +633,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'category_variation',
                 CategoryProductVariationTrans::class,
                 'category_variation_trans',
-                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local'
+                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local',
             );
 
 
@@ -647,7 +648,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'ord_product',
                 ProductModification::class,
                 'product_modification',
-                'product_modification.id = ord_product.modification OR product_modification.id IS NULL '
+                'product_modification.id = ord_product.modification OR product_modification.id IS NULL ',
             );
 
         /** Modification Barcode */
@@ -657,7 +658,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_modification',
                 ProductModificationBarcode::class,
                 'product_modification_barcode',
-                'product_modification_barcode.modification = product_modification.id'
+                'product_modification_barcode.modification = product_modification.id',
             );
 
         /* Получаем тип модификации множественного варианта */
@@ -667,7 +668,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'product_modification',
                 CategoryProductModification::class,
                 'category_modification',
-                'category_modification.id = product_modification.category_modification'
+                'category_modification.id = product_modification.category_modification',
             );
 
         /* Получаем название типа модификации */
@@ -678,7 +679,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                 'category_modification',
                 CategoryProductModificationTrans::class,
                 'category_modification_trans',
-                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local'
+                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local',
             );
 
         /** Штрихкоды продукта */
@@ -694,7 +695,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
                         product_info.barcode
                         )
                    ) AS barcodes
-            "
+            ",
         );
 
         $dbal->addSelect('
@@ -713,21 +714,21 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             'product_event',
             ProductPhoto::class,
             'product_photo',
-            'product_photo.event = product_event.id AND product_photo.root = true'
+            'product_photo.event = product_event.id AND product_photo.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductModificationImage::class,
             'product_modification_image',
-            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true'
+            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductVariationImage::class,
             'product_variation_image',
-            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true'
+            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true',
         );
 
 
@@ -735,7 +736,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
             'product_offer',
             ProductOfferImage::class,
             'product_offer_images',
-            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true'
+            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true',
         );
 
         $dbal->addSelect(
@@ -751,7 +752,7 @@ final class PrintOzonPackageOrdersRepository implements PrintOzonPackageOrdersIn
 					CONCAT ( '/upload/".$dbal->table(ProductPhoto::class)."' , '/', product_photo.name)
 			   ELSE NULL
 			END AS product_image
-		"
+		",
         );
 
         /* Флаг загрузки файла CDN */

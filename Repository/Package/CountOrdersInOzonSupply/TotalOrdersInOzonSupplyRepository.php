@@ -77,7 +77,7 @@ final class TotalOrdersInOzonSupplyRepository implements TotalOrdersInOzonSupply
             'package_supply',
             OzonPackageOrder::class,
             'package_order',
-            'package_order.event = package_supply.event'
+            'package_order.event = package_supply.event',
         );
 
         return $dbal->count();

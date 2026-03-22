@@ -73,23 +73,10 @@ final class OzonSupplyStatus
 
     }
 
-    public function __toString(): string
-    {
-        return $this->status->getValue();
-    }
-
-
     public function getSupplyStatus(): OzonSupplyStatusInterface
     {
         return $this->status;
     }
-
-
-    public function getSupplyStatusValue(): string
-    {
-        return $this->status->getValue();
-    }
-
 
     public static function getDeclared(): array
     {
@@ -97,7 +84,7 @@ final class OzonSupplyStatus
             get_declared_classes(),
             static function($className) {
                 return in_array(OzonSupplyStatusInterface::class, class_implements($className), true);
-            }
+            },
         );
     }
 
@@ -106,5 +93,15 @@ final class OzonSupplyStatus
         $status = new self($status);
 
         return $this->getSupplyStatusValue() === $status->getSupplyStatusValue();
+    }
+
+    public function getSupplyStatusValue(): string
+    {
+        return $this->status->getValue();
+    }
+
+    public function __toString(): string
+    {
+        return $this->status->getValue();
     }
 }

@@ -99,7 +99,7 @@ final class SupplyDetailFilterForm extends AbstractType
                 $this->request->getSession()->set(SupplyDetailFilterDTO::offer, $data->getOffer());
                 $this->request->getSession()->set(SupplyDetailFilterDTO::variation, $data->getVariation());
                 $this->request->getSession()->set(SupplyDetailFilterDTO::modification, $data->getModification());
-            }
+            },
         );
 
 
@@ -144,7 +144,7 @@ final class SupplyDetailFilterForm extends AbstractType
                                     'priority' => 200,
                                     'required' => false,
 
-                                ]
+                                ],
                             );
 
 
@@ -169,7 +169,7 @@ final class SupplyDetailFilterForm extends AbstractType
                                             'priority' => 199,
                                             'required' => false,
 
-                                        ]
+                                        ],
                                     );
 
                                     /** Модификации множественных вариантов торгового предложения */
@@ -192,7 +192,7 @@ final class SupplyDetailFilterForm extends AbstractType
                                                     'label' => $modificationField->getOption(),
                                                     'priority' => 198,
                                                     'required' => false,
-                                                ]
+                                                ],
                                             );
                                         }
                                     }
@@ -207,7 +207,7 @@ final class SupplyDetailFilterForm extends AbstractType
                     $data->setVariation(null);
                     $data->setModification(null);
                 }
-            }
+            },
         );
     }
 

@@ -95,7 +95,7 @@ final class OzonSupplyIdentifierByStatusRepository implements OzonSupplyIdentifi
                 'invariable',
                 OzonSupply::class,
                 'supply',
-                'supply.id = invariable.main'
+                'supply.id = invariable.main',
             );
 
         /** Активное событие */
@@ -107,7 +107,7 @@ final class OzonSupplyIdentifierByStatusRepository implements OzonSupplyIdentifi
                 'event',
                 '
                     event.id = supply.event AND 
-                    event.status = :new'
+                    event.status = :new',
             )
             ->setParameter('new', $this->status->getValue(), OzonSupplyStatus::TYPE);
 

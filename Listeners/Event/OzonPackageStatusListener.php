@@ -34,6 +34,7 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 
 /**
  * Слушатель инициирует OzonPackageStatusCollection для определения в типе доктрины.
+ *
  * @see OzonPackageStatusCollection
  */
 #[AsEventListener(event: ControllerEvent::class)]

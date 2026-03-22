@@ -115,6 +115,7 @@ final readonly class UpdateProductStocksToExtraditionDispatcher
 
             /**
              * Находим событие складской заявки со статусом Package «Упаковка» и связанной с заказом и упаковкой Ozon
+             *
              * @note при производстве на заказы Ozon FBS - один заказ - одна СЗ
              */
             $ProductStockEventArray = $this->productStocksByOrderRepository

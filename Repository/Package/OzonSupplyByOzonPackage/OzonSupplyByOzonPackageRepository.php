@@ -75,7 +75,7 @@ final class OzonSupplyByOzonPackageRepository implements OzonSupplyByOzonPackage
             ->setParameter(
                 key: 'event',
                 value: $this->event,
-                type: OzonPackageEventUid::TYPE
+                type: OzonPackageEventUid::TYPE,
             );
 
         $supply = $dbal->fetchOne();

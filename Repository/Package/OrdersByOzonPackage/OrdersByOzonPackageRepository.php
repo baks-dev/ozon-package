@@ -70,6 +70,16 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
     }
 
     /**
+     * @return array<int, OrdersByOzonPackageResult>|false
+     */
+    public function toArray(): array|false
+    {
+        $Generator = $this->findAll();
+
+        return (false === $Generator || false === $Generator->valid()) ? false : iterator_to_array($Generator);
+    }
+
+    /**
      * @return Generator<int, OrdersByOzonPackageResult>|false
      */
     public function findAll(): Generator|false
@@ -93,7 +103,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 'ozon_package_order',
                 OzonPackageEvent::class,
                 'ozon_package_event',
-                'ozon_package_event.id = ozon_package_order.event'
+                'ozon_package_event.id = ozon_package_order.event',
             );
 
         $dbal
@@ -101,7 +111,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
             ->setParameter(
                 key: 'event',
                 value: $this->event,
-                type: OzonPackageEventUid::TYPE
+                type: OzonPackageEventUid::TYPE,
             );
 
         $dbal
@@ -109,7 +119,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 'ozon_package_event',
                 OzonPackageSupply::class,
                 'ozon_package_supply',
-                'ozon_package_supply.main = ozon_package_event.main'
+                'ozon_package_supply.main = ozon_package_event.main',
             );
 
         $dbal
@@ -118,7 +128,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 'ozon_package_supply',
                 OzonSupplyIdentifier::class,
                 'ozon_supply_identifier',
-                'ozon_supply_identifier.main = ozon_package_supply.supply'
+                'ozon_supply_identifier.main = ozon_package_supply.supply',
             );
 
         $dbal
@@ -127,7 +137,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 'ozon_package_order',
                 Order::class,
                 'ord',
-                'ord.id = ozon_package_order.id'
+                'ord.id = ozon_package_order.id',
             );
 
         $dbal
@@ -139,7 +149,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 'invariable',
                 '
                     invariable.main = ord.id 
-                    '
+                    ',
             // AND invariable.token != NULL // @TODO
             );
 
@@ -154,7 +164,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 OrderProduct::class,
                 'ord_product',
                 '
-                    ord_product.event = ord.event'
+                    ord_product.event = ord.event',
             );
 
         /**
@@ -167,7 +177,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 'ord_product',
                 OrderProductPosting::class,
                 'ord_product_posting',
-                'ord_product_posting.product = ord_product.id'
+                'ord_product_posting.product = ord_product.id',
             );
 
         /** Отправления заказа */
@@ -177,7 +187,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                 'ord_product',
                 OrderPosting::class,
                 'orders_posting',
-                'orders_posting.event = ord.event'
+                'orders_posting.event = ord.event',
             );
 
 
@@ -200,7 +210,7 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                        THEN CONCAT ( '/upload/".$dbal->table(MaterialSignCode::class)."' , '/', code.name)
                        ELSE NULL
                     END AS code_image
-                    "
+                    ",
                 )
                 ->addSelect("code.ext AS code_ext")
                 ->addSelect("code.cdn AS code_cdn")
@@ -209,22 +219,12 @@ final class OrdersByOzonPackageRepository implements OrdersByOzonPackageInterfac
                     'sign_event',
                     MaterialSignCode::class,
                     'code',
-                    'code.main = sign_event.main'
+                    'code.main = sign_event.main',
                 );
         }
 
         $dbal->enableCache('ozon-package');
 
         return $dbal->fetchAllHydrate(OrdersByOzonPackageResult::class);
-    }
-
-    /**
-     * @return array<int, OrdersByOzonPackageResult>|false
-     */
-    public function toArray(): array|false
-    {
-        $Generator = $this->findAll();
-
-        return (false === $Generator || false === $Generator->valid()) ? false : iterator_to_array($Generator);
     }
 }

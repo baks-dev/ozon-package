@@ -103,7 +103,7 @@ final class AddController extends AbstractController
         $form = $this->createForm(
             type: AddOrdersPackageForm::class,
             data: $AddOrdersPackageDTO,
-            options: ['action' => $this->generateUrl('ozon-package:admin.package.add'),]
+            options: ['action' => $this->generateUrl('ozon-package:admin.package.add'),],
         );
 
         $form->handleRequest($Request);
@@ -125,8 +125,8 @@ final class AddController extends AbstractController
                 'ozon-package: Информация о продукте не найдена',
                 [
                     self::class.':'.__LINE__,
-                    var_export($AddOrdersPackageDTO, true)
-                ]
+                    var_export($AddOrdersPackageDTO, true),
+                ],
             );
 
             return new Response('Информация о продукте не найдена', Response::HTTP_NOT_FOUND);
@@ -173,6 +173,7 @@ final class AddController extends AbstractController
 
                 /**
                  * Получаем заказ со статусом «УПАКОВКА» на данную продукцию
+                 *
                  * @var $OrderEvent OrderEvent|false
                  */
                 $OrderEvent = $relevantNewOrderByProductRepository
@@ -198,6 +199,7 @@ final class AddController extends AbstractController
 
                 /**
                  * Находим текущий продукт в заказе
+                 *
                  * @note при производстве - в заказе один продукт
                  */
                 $orderProduct = $OrderEvent->getProduct()
@@ -275,7 +277,7 @@ final class AddController extends AbstractController
 
         return $this->render([
             'form' => $form->createView(),
-            'card' => $productDetail
+            'card' => $productDetail,
         ]);
     }
 }

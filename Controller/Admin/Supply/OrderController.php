@@ -50,8 +50,8 @@ final class OrderController extends AbstractController
     {
         return $this->render(
             [
-                'supply' => $ozonSupplyIdentifier
-            ]
+                'supply' => $ozonSupplyIdentifier,
+            ],
         );
     }
 }

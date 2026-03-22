@@ -31,11 +31,18 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 /**
  * Статус Close «Закрыто»
  */
-
 #[AutoconfigureTag('baks.ozon.supply.status')]
 final class OzonSupplyStatusClose implements OzonSupplyStatusInterface
 {
     public const string STATUS = 'close';
+
+    /**
+     * Проверяет, относится ли строка к данному объекту
+     */
+    public static function equals(string $status): bool
+    {
+        return mb_strtolower($status) === self::STATUS;
+    }
 
     public function __toString(): string
     {
@@ -48,13 +55,5 @@ final class OzonSupplyStatusClose implements OzonSupplyStatusInterface
     public function getValue(): string
     {
         return self::STATUS;
-    }
-
-    /**
-     * Проверяет, относится ли строка к данному объекту
-     */
-    public static function equals(string $status): bool
-    {
-        return mb_strtolower($status) === self::STATUS;
     }
 }

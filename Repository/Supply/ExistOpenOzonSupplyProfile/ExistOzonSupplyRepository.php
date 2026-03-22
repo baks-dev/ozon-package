@@ -67,57 +67,6 @@ final class ExistOzonSupplyRepository implements ExistOzonSupplyInterface
         return $this;
     }
 
-    private function builder(): DBALQueryBuilder
-    {
-        $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class);
-
-        $dbal
-            ->from(OzonSupplyInvariable::class, 'ozon_supply_invariable')
-            ->where('ozon_supply_invariable.profile = :profile')
-            ->setParameter(
-                key: 'profile',
-                value: $this->profile,
-                type: UserProfileUid::TYPE
-            );
-
-        $dbal->join(
-            'ozon_supply_invariable',
-            OzonSupply::class, 'ozon_supply',
-            '
-                ozon_supply.id = ozon_supply_invariable.main AND 
-                ozon_supply.event = ozon_supply_invariable.event'
-        );
-
-        $dbal
-            ->join(
-                'ozon_supply_invariable',
-                OzonSupplyEvent::class, 'ozon_supply_event',
-                '
-                    ozon_supply_event.id = ozon_supply_invariable.event AND 
-                    ozon_supply_event.status IN (:status)'
-            );
-
-        if($this->identifier)
-        {
-            $dbal
-                ->join(
-                    'ozon_supply_invariable',
-                    OzonSupplyIdentifier::class, 'ozon_supply_identifier',
-                    '
-                        ozon_supply_identifier.main = ozon_supply_invariable.main AND 
-                        ozon_supply_identifier.event = ozon_supply_invariable.event AND
-                        ozon_supply_identifier.identifier = :identifier
-                    '
-                )
-                ->setParameter(
-                    key: 'identifier',
-                    value: $this->identifier,
-                );
-        }
-
-        return $dbal;
-    }
-
     /**
      * Метод проверяет, имеется ли поставка со статусом «New»
      */
@@ -133,10 +82,61 @@ final class ExistOzonSupplyRepository implements ExistOzonSupplyInterface
         $dbal->setParameter(
             key: 'status',
             value: [OzonSupplyStatusNew::STATUS],
-            type: ArrayParameterType::STRING
+            type: ArrayParameterType::STRING,
         );
 
         return $dbal->fetchExist();
+    }
+
+    private function builder(): DBALQueryBuilder
+    {
+        $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class);
+
+        $dbal
+            ->from(OzonSupplyInvariable::class, 'ozon_supply_invariable')
+            ->where('ozon_supply_invariable.profile = :profile')
+            ->setParameter(
+                key: 'profile',
+                value: $this->profile,
+                type: UserProfileUid::TYPE,
+            );
+
+        $dbal->join(
+            'ozon_supply_invariable',
+            OzonSupply::class, 'ozon_supply',
+            '
+                ozon_supply.id = ozon_supply_invariable.main AND 
+                ozon_supply.event = ozon_supply_invariable.event',
+        );
+
+        $dbal
+            ->join(
+                'ozon_supply_invariable',
+                OzonSupplyEvent::class, 'ozon_supply_event',
+                '
+                    ozon_supply_event.id = ozon_supply_invariable.event AND 
+                    ozon_supply_event.status IN (:status)',
+            );
+
+        if($this->identifier)
+        {
+            $dbal
+                ->join(
+                    'ozon_supply_invariable',
+                    OzonSupplyIdentifier::class, 'ozon_supply_identifier',
+                    '
+                        ozon_supply_identifier.main = ozon_supply_invariable.main AND 
+                        ozon_supply_identifier.event = ozon_supply_invariable.event AND
+                        ozon_supply_identifier.identifier = :identifier
+                    ',
+                )
+                ->setParameter(
+                    key: 'identifier',
+                    value: $this->identifier,
+                );
+        }
+
+        return $dbal;
     }
 
     /**
@@ -154,7 +154,7 @@ final class ExistOzonSupplyRepository implements ExistOzonSupplyInterface
         $dbal->setParameter(
             key: 'status',
             value: [OzonSupplyStatusOpen::STATUS],
-            type: ArrayParameterType::STRING
+            type: ArrayParameterType::STRING,
         );
 
         return $dbal->fetchExist();
@@ -175,7 +175,7 @@ final class ExistOzonSupplyRepository implements ExistOzonSupplyInterface
         $dbal->setParameter(
             key: 'status',
             value: [OzonSupplyStatusNew::STATUS, OzonSupplyStatusOpen::STATUS],
-            type: ArrayParameterType::STRING
+            type: ArrayParameterType::STRING,
         );
 
         return $dbal->fetchExist();

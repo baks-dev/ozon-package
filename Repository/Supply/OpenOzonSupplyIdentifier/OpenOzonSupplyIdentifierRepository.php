@@ -86,7 +86,7 @@ final class OpenOzonSupplyIdentifierRepository implements OpenOzonSupplyIdentifi
                 'invariable',
                 OzonSupply::class,
                 'supply',
-                'supply.id = invariable.main'
+                'supply.id = invariable.main',
             );
 
         $dbal
@@ -95,7 +95,7 @@ final class OpenOzonSupplyIdentifierRepository implements OpenOzonSupplyIdentifi
                 'supply',
                 OzonSupplyEvent::class,
                 'event',
-                'event.id = supply.event AND (event.status = :new OR event.status = :open) '
+                'event.id = supply.event AND (event.status = :new OR event.status = :open) ',
             )
             ->setParameter('new', OzonSupplyStatusNew::class, OzonSupplyStatus::TYPE)
             ->setParameter('open', OzonSupplyStatusOpen::class, OzonSupplyStatus::TYPE);

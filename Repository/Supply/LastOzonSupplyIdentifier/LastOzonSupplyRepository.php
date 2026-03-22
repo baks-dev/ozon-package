@@ -80,7 +80,7 @@ final class LastOzonSupplyRepository implements LastOzonSupplyInterface
                 'ozon_supply_invariable',
                 OzonSupply::class,
                 'ozon_supply',
-                'ozon_supply.id = ozon_supply_invariable.main'
+                'ozon_supply.id = ozon_supply_invariable.main',
             );
 
         $dbal
@@ -89,7 +89,7 @@ final class LastOzonSupplyRepository implements LastOzonSupplyInterface
                 'ozon_supply',
                 OzonSupplyEvent::class,
                 'ozon_supply_event',
-                'ozon_supply_event.id = ozon_supply.event'
+                'ozon_supply_event.id = ozon_supply.event',
             );
 
         $dbal
@@ -98,7 +98,7 @@ final class LastOzonSupplyRepository implements LastOzonSupplyInterface
                 'ozon_supply',
                 OzonSupplyModify::class,
                 'ozon_supply_modify',
-                'ozon_supply_modify.event = ozon_supply.event'
+                'ozon_supply_modify.event = ozon_supply.event',
             );
 
         $dbal
@@ -107,7 +107,7 @@ final class LastOzonSupplyRepository implements LastOzonSupplyInterface
                 'ozon_supply',
                 OzonSupplyIdentifier::class,
                 'ozon_supply_identifier',
-                'ozon_supply_identifier.main = ozon_supply.id'
+                'ozon_supply_identifier.main = ozon_supply.id',
             );
 
         $dbal
@@ -115,7 +115,7 @@ final class LastOzonSupplyRepository implements LastOzonSupplyInterface
             ->setParameter(
                 'profile',
                 $this->profile ?: $this->UserProfileTokenStorage->getProfile(),
-                UserProfileUid::TYPE
+                UserProfileUid::TYPE,
             );
 
         $dbal->orderBy('ozon_supply_modify.mod_date', 'DESC');

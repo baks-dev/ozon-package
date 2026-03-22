@@ -72,7 +72,7 @@ final class OzonSupplyTotalHandler extends AbstractHandler
             $this->logger->warning(
                 message: sprintf('%s: Не найдено OzonSupplyInvariable', $error),
                 context: [
-                    self::class.':'.__LINE__
+                    self::class.':'.__LINE__,
                 ],
             );
 
