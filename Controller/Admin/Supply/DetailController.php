@@ -70,7 +70,7 @@ final class DetailController extends AbstractController
         $filterForm = $this
             ->createForm(
                 type: ProductFilterForm::class,
-                data: $filter = new ProductFilterDTO(),
+                data: $filter = new ProductFilterDTO()->hiddenMaterials(),
                 options: ['action' => $this->generateUrl('ozon-package:admin.supply.detail', ['id' => $ozonSupply->getId()])],
             )
             ->handleRequest($request);
