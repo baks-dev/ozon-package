@@ -37,7 +37,14 @@
                     {% if stickers[postingNumber] is defined %}
 
                         {#                        <div style="height: 140px; max-height: 140px; max-width: 200px; margin-left: 20px;"> #}
-                        <img src="data:image/jpeg;base64, {{ stickers[postingNumber] }}" alt="ozon-sticker"/>
+                        <img src="data:image/jpeg;base64, {{ stickers[postingNumber] }}" alt="ozon-sticker"
+                             style="
+                 margin-left: 75px;
+                 margin-top: -60px;
+                 width: 200px;
+                 max-width: 200px;
+                 transform: rotate(270deg);"
+                        />
                         {#                        </div> #}
                     {% endif %}
 

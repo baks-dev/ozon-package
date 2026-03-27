@@ -42,7 +42,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[RoleSecurity('ROLE_OZON_SUPPLY')]
+#[RoleSecurity('ROLE_OZON_PACKAGE')]
 final class DetailController extends AbstractController
 {
     /**

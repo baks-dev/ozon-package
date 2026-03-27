@@ -128,6 +128,7 @@ final class PrintOrderController extends AbstractController
          * Получаем стикеры Ozon
          */
         $key = $OzonPackageOrderResult->getOrderPosting();
+        $key = str_replace('O-', '', $key);
         $ozonSticker = $cache->getItem($key)->get();
 
 
