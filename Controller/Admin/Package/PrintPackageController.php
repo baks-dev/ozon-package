@@ -261,8 +261,8 @@ final class PrintPackageController extends AbstractController
         /**
          * Получаем настройки для штрих-кода Ozon
          */
-        $this->settings[$OzonPackageUid] = $Product->getProductMain() ?
-            $ozonBarcodeSettingsRepository->forProduct($Product->getProductMain())->find() :
+        $this->settings[$OzonPackageUid] = $Product->getProductId() ?
+            $ozonBarcodeSettingsRepository->forProduct($Product->getProductId())->find() :
             false;
 
         /** Скрываем у все пользователей упаковку для печати */

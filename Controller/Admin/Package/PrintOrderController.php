@@ -225,8 +225,10 @@ final class PrintOrderController extends AbstractController
         /**
          * Получаем настройки для штрих-кода Ozon
          */
-        $this->settings = $product->getProductMain() ? $barcodeSettingsRepository
-            ->forProduct($product->getProductMain())
+
+
+        $this->settings = $product->getProductId() ? $barcodeSettingsRepository
+            ->forProduct($product->getProductId())
             ->find() : false;
 
         /** Генерируем штрихкод в формате SVG */

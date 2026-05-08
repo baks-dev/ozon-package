@@ -273,8 +273,8 @@ final class PrintSupplyController extends AbstractController
                     /**
                      * Получаем настройки для штрих-кода Ozon
                      */
-                    $this->settings[$OzonPackageUid] = $Product->getProductMain() ?
-                        $ozonBarcodeSettingsRepository->forProduct($Product->getProductMain())->find() :
+                    $this->settings[$OzonPackageUid] = $Product->getProductId() ?
+                        $ozonBarcodeSettingsRepository->forProduct($Product->getProductId())->find() :
                         false;
                 }
             }
