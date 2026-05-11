@@ -41,7 +41,7 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Меняет статус складской заявки на Extradition «Укомплектована, готова к выдаче»:
+ * Обновляем статус складской заявки на Extradition «Укомплектована, готова к выдаче»:
  * - при добавлении продуктов из заказа в поставку Ozon
  * - при выполнении производственной парии Ozon Fbs
  */
@@ -149,9 +149,7 @@ final readonly class UpdateProductStocksToExtraditionDispatcher
                     $ProductStockEvent->getId(),
                     $ProductStockEvent->getInvariable()->getProfile(),
                     $ProductStockEvent->getInvariable()->getUsr(),
-                    sprintf(
-                        'Статус складской заявки изменен для закрытия поставки Ozon %s',
-                        $OzonSupplyResult->getIdentifier()),
+                    $OzonSupplyResult->getIdentifier(),
                 );
 
                 $this->messageDispatch->dispatch(
