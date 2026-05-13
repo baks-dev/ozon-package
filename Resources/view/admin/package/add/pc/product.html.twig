@@ -4,8 +4,7 @@
 
 <div id="{{ card_id }}"
      data-name="{{ (card.productName ~ card.productOfferDetailName ~ card.productArticle)|lower }}"
-     class="d-flex gap-3 align-items-center mb-2 pack rounded-3"
-     style="background-color: {{ card.part ? 'rgba(25, 135, 84, 0.1); color: #198754' :'rgba(220, 53, 69, 0.1); color: #dc3545' }};">
+     class="d-flex gap-3 align-items-center mb-2 pack rounded-3">
 
     {# Обложка #}
     <button class="btn btn-link bg-cover rounded-2 lazy img-product m-0"
@@ -45,7 +44,7 @@
         <strong>{{ card.productArticle }}</strong>&nbsp;
 
         <div>
-            <small class="opacity-50">Всего продуктов:</small> &nbsp;
+            <small class="opacity-50">Количество заказов в упаковке:</small> &nbsp;
             <strong>{{ card.productTotal }}</strong> шт.
         </div>
 

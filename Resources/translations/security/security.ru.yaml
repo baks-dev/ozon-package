@@ -3,8 +3,8 @@
 ## Package
 
 ROLE_OZON_PACKAGE:
-  name: 'Упаковка заказов Ozon'
-  desc: 'Упаковка заказов Ozon'
+  name: 'Упаковка заказов'
+  desc: 'Упаковка заказов'
 
 ROLE_OZON_PACKAGE_INDEX:
   name: 'Просмотр'

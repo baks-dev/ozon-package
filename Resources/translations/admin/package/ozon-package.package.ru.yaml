@@ -1,12 +1,12 @@
 page:
-  index: 'Упаковка заказов Ozon'
+  index: 'Упаковка заказов'
   add: 'Добавить в поставку Ozon'
   open: 'Открыть поставку Ozon'
   close: 'Закрыть поставку Ozon'
   delete: 'Удалить поставку Ozon'
 
 breadcrumb:
-  index: 'Упаковка заказов Ozon'
+  index: 'Упаковка заказов'
   add: 'Добавить в поставку Ozon'
   open: 'Открыть поставку Ozon'
   close: 'Закрыть поставку Ozon'
